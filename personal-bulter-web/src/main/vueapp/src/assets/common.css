@@ -1,0 +1,419 @@
+html {
+    width: 100%;
+    height: 100%;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#app {
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+}
+
+/*修改折叠面板属性*/
+.el-collapse {
+    border-top: 0px solid #ebeef5;
+    border-bottom: 0px solid #ebeef5;
+}
+
+.el-collapse-item__header {
+    border-bottom: 0px solid #ebeef5;
+}
+
+.el-collapse-item__wrap {
+    border-bottom: 0px solid #ebeef5;
+}
+
+.vue-treeselect__placeholder {
+    color: #c0c4cc;
+    font-size: 12px;
+}
+
+.vue-treeselect {
+    font-size: 14px;
+}
+
+/** dialog样式 */
+.el-dialog__header {
+    border-bottom: 1px solid #ddd;
+}
+
+/** form样式修改 */
+.el-checkbox + .el-checkbox{
+    margin-left: 0px;
+}
+.el-checkbox{
+    margin-right: 15px;
+}
+.el-radio + .el-radio{
+    margin-left: 0px;
+}
+.el-radio + .el-radio{
+    margin-left: 0px;
+}
+.el-radio{
+    padding: 5px 0px;
+    margin-right: 15px;
+}
+
+/** flex css start */
+.box {
+    display: -moz-flex;
+    display: -ms-flex;
+    display: flex;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-box;
+    display: -webkit-flex
+}
+
+.boxH {
+    -webkit-flex-direction: row;
+    -moz-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-box-orient: horizontal;
+    -moz-box-orient: horizontal;
+    -ms-box-orient: horizontal
+}
+
+.boxV {
+    -webkit-flex-direction: column;
+    -moz-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    -ms-box-orient: vertical
+}
+
+.boxC {
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    -ms-box-align: center;
+    box-align: center;
+    -webkit-box-pack: center;
+    -moz-box-pack: center;
+    -ms-box-pack: center;
+    box-pack: center;
+    -webkit-align-items: center;
+    -moz-align-items: center;
+    -ms-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    -moz-justify-content: center;
+    -ms-justify-content: center;
+    justify-content: center
+}
+
+.boxW {
+    -webkit-flex-wrap: wrap;
+    -moz-flex-wrap: wrap;
+    flex-wrap: wrap;
+    flex-wrap: wrap
+}
+
+.flex_stretch {
+    -webkit-box-align: stretch;
+    -moz-box-align: stretch;
+    -ms-box-align: stretch;
+    box-align: stretch;
+    -webkit-align-self: stretch;
+    -moz-align-self: stretch;
+    -ms-align-self: stretch;
+    align-self: stretch
+}
+
+.flex_end {
+    -webkit-box-align: end;
+    -moz-box-align: end;
+    -ms-box-align: end;
+    box-align: end;
+    -webkit-align-self: flex-end;
+    -moz-align-self: flex-end;
+    -ms-align-self: flex-end;
+    align-self: flex-end
+}
+
+.flex_start {
+    -webkit-box-align: start;
+    -moz-box-align: start;
+    -ms-box-align: start;
+    box-align: start;
+    -webkit-align-self: stretch;
+    -moz-align-self: stretch;
+    -ms-align-self: stretch;
+    align-self: stretch;
+    -webkit-align-self: flex-start;
+    -moz-align-self: flex-start;
+    -ms-align-self: flex-start;
+    align-self: flex-start
+}
+
+.flex0 {
+    -webkit-flex: 0;
+    -moz-flex: 0;
+    -ms-flex: 0;
+    -webkit-box-flex: 0;
+    -moz-box-flex: 0;
+    box-flex: 0;
+    flex: 0
+}
+
+.flex1 {
+    -webkit-flex: 1;
+    -moz-flex: 1;
+    -ms-flex: 1;
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -ms-box-flex: 1;
+    box-flex: 1;
+    flex: 1
+}
+
+.flex2 {
+    -webkit-flex: 2;
+    -moz-flex: 2;
+    -ms-flex: 2;
+    -webkit-box-flex: 2;
+    -moz-box-flex: 2;
+    -ms-box-flex: 2;
+    box-flex: 2;
+    flex: 2
+}
+
+.flex3 {
+    -webkit-flex: 3;
+    -moz-flex: 3;
+    -ms-flex: 3;
+    -webkit-box-flex: 3;
+    -moz-box-flex: 3;
+    -ms-box-flex: 3;
+    box-flex: 3;
+    flex: 3
+}
+
+.flex4 {
+    -webkit-flex: 4;
+    -moz-flex: 4;
+    -ms-flex: 4;
+    -webkit-box-flex: 4;
+    -moz-box-flex: 4;
+    -ms-box-flex: 4;
+    box-flex: 4;
+    flex: 4
+}
+
+.flex5 {
+    -webkit-flex: 5;
+    -moz-flex: 5;
+    -ms-flex: 5;
+    -webkit-box-flex: 5;
+    -moz-box-flex: 5;
+    -ms-box-flex: 5;
+    box-flex: 5;
+    flex: 5
+}
+
+.flex6 {
+    -webkit-flex: 6;
+    -moz-flex: 6;
+    -ms-flex: 6;
+    -webkit-box-flex: 6;
+    -moz-box-flex: 6;
+    -ms-box-flex: 6;
+    box-flex: 6;
+    flex: 6
+}
+
+.pT10 {
+    padding-top: 10px
+}
+
+.pB10 {
+    padding-bottom: 10px
+}
+
+.pL10 {
+    padding-left: 10px
+}
+
+.pR10 {
+    padding-right: 10px
+}
+
+.p10 {
+    padding: 10px
+}
+
+.mT10 {
+    margin-top: 10px
+}
+
+.mB10 {
+    margin-bottom: 10px
+}
+
+.mL10 {
+    margin-left: 10px
+}
+
+.mR10 {
+    margin-right: 10px
+}
+
+.m10 {
+    margin: 10px
+}
+
+.pT20 {
+    padding-top: 20px
+}
+
+.pB20 {
+    padding-bottom: 20px
+}
+
+.pL20 {
+    padding-left: 20px
+}
+
+.pR20 {
+    padding-right: 20px
+}
+
+.p20 {
+    padding: 20px
+}
+
+.mT20 {
+    margin-top: 20px
+}
+
+.mB20 {
+    margin-bottom: 20px
+}
+
+.mL20 {
+    margin-left: 20px
+}
+
+.mR20 {
+    margin-right: 20px
+}
+
+.m20 {
+    margin: 20px
+}
+
+.f20 {
+    font-size: 20px
+}
+
+.f18 {
+    font-size: 18px
+}
+
+.f16 {
+    font-size: 16px
+}
+
+.f14 {
+    font-size: 14px
+}
+
+.f12 {
+    font-size: 12px
+}
+
+.pT5 {
+    padding-top: 5px
+}
+
+.pB5 {
+    padding-bottom: 5px
+}
+
+.pL5 {
+    padding-left: 5px
+}
+
+.pR5 {
+    padding-right: 5px
+}
+
+.p5 {
+    padding: 5px
+}
+
+.mT5 {
+    margin-top: 5px
+}
+
+.mB5 {
+    margin-bottom: 5px
+}
+
+.mL5 {
+    margin-left: 5px
+}
+
+.mR5 {
+    margin-right: 5px
+}
+
+.m5 {
+    margin: 5px
+}
+
+/** flex css end  */
+
+.split {
+    padding: 10px 0px;
+    border-top: 1px solid #ecebeb;
+}
+
+.breadcrumb {
+    padding: 15px 0;
+}
+
+/** 查询条件样式 */
+.search-label {
+    font-weight: bold;
+    font-size: 12px;
+    color: #ada7a7;
+    height: 30px;
+    line-height: 30px;
+    padding: 0px 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+    background: #f5f7fa;
+    margin-right: -1px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    white-space: nowrap;
+}
+/** 图表遮罩 */
+.errorMask{
+    /*background: #fafafa;*/
+    position: absolute;
+    top: 46px;
+    bottom: 65px;
+    left: 108px;
+    right: 94px;
+    padding-top: 132px;
+    text-align: center;
+    color: #909399;
+    font-size: 12px;
+}

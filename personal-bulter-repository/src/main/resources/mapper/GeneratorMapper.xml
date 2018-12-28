@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lin.bulter.repository.mysql.dao.GeneratorMapper">
+
+    <resultMap id="BaseResultMap" type="com.lin.bulter.repository.mysql.entity.TableInfo">
+        <result column="COLUMN_NAME" property="columnName" jdbcType="VARCHAR"/>
+        <result column="DATA_TYPE" property="dataType" jdbcType="VARCHAR"/>
+        <result column="COLUMN_COMMENT" property="columnComment" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getTableInfo" resultMap="BaseResultMap">
+      SELECT DISTINCT COLUMN_NAME, DATA_TYPE, COLUMN_COMMENT
+      FROM
+        COLUMNS
+      WHERE
+        table_name = #{tableName}
+    </select>
+</mapper>

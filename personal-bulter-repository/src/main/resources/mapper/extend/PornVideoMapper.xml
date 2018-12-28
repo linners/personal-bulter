@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lin.bulter.repository.mysql.dao.PornVideoMapper">
+
+    <select id="selectFavoritePornVideos" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_video_2
+        where status = 1
+    </select>
+
+    <update id="dofavorite">
+        update t_video_2
+        <set>
+            status = 1
+        </set>
+        where id = #{id}
+    </update>
+</mapper>

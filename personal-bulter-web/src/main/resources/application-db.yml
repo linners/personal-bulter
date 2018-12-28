@@ -1,0 +1,49 @@
+spring:
+
+  # mongodb配置
+  data:
+    mongodb:
+      host: 127.0.0.1
+      port: 30007
+      database: lin
+
+  # mysql
+  datasource:
+    name: test
+    url: jdbc:mysql://39.105.136.143:3306/bulter?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&autoReconnect=true&autoReconnectForPools=true&failOverReadOnly=false&useSSL=false
+    sqlScriptEncoding: utf8
+    username: bulter
+    password: Lin*^37aa
+    # 使用druid数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    filters: stat,wall,log4j
+    maxActive: 20
+    initialSize: 1
+    maxWait: 60000
+    minIdle: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+    connection-properties: druid.stat.merggSql=ture&druid.stat.slowSqlMillis=5000
+
+# mybatis配置
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true #开启驼峰映射
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.lin.bulter.repository.mysql.entity
+
+# pagehelper分页插件
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  offsetAsPageNum: true
+  rowBoundsWithCount: true
+  params: count=countSql
