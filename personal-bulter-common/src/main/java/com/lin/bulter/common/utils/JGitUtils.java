@@ -11,9 +11,8 @@ public class JGitUtils {
 
     public static Git git;
 
-    public static void cloneGitTemplate(String gitRepository, String oldBasePath, String branchName) {
-        String basePath = oldBasePath;
-        File gitFile = new File(basePath);
+    public static void cloneGitTemplate(String gitRepository, String gitBasePath, String branchName) {
+        File gitFile = new File(gitBasePath);
         try {
             if (gitFile.exists()) {
                 git = Git.open(gitFile);
@@ -22,7 +21,7 @@ public class JGitUtils {
             }
             ListBranchCommand listBranchCommand = git.branchList();
             String branch = listBranchCommand.getRepository().getBranch();
-            if (branch != null && !branch.equals(branchName)) {
+            if (branchName!=null && !"master".equals(branchName) && branch != null && !branch.equals(branchName)) {
                 git.checkout().setCreateBranch(true).setName(branchName).call();
             }
             git.pull().call();

@@ -23,8 +23,27 @@ public class AutoGeneratorController {
     @Autowired
     private GeneratorService generatorService;
 
+    /**
+     * 生成整个工程框架
+     * @param param
+     * @return
+     */
     @PostMapping("/project")
     public String generateProject(@RequestBody GenerateParam param) {
+        String zipPath = generatorService.generatorProject(param);
+        String download = downDomain + "/download/" + zipPath;
+        logger.info(">>>>>>>>自动生成结束, 下载地址: {}", download);
+        return download;
+    }
+
+    /**
+     * 生成增删改查
+     * 包括controller / service  / dao / mapper.xml
+     * @param param
+     * @return
+     */
+    @PostMapping("/crud")
+    public String generateCrud(@RequestBody GenerateParam param) {
         String zipPath = generatorService.generatorProject(param);
         String download = downDomain + "/download/" + zipPath;
         logger.info(">>>>>>>>自动生成结束, 下载地址: {}", download);

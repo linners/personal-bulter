@@ -4,6 +4,7 @@ import com.google.common.io.Files;
 import com.lin.bulter.business.autogenerator.GeneratorService;
 import com.lin.bulter.common.dto.autogenerator.GenerateParam;
 import com.lin.bulter.common.utils.JGitUtils;
+import com.lin.bulter.common.utils.StringUtil;
 import com.lin.bulter.common.utils.VelocityUtils;
 import com.lin.bulter.common.utils.ZipUtils;
 import org.apache.velocity.VelocityContext;
@@ -18,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -89,23 +91,40 @@ public class GeneratorServiceImpl implements GeneratorService {
         }
         File[] fileList = file.listFiles();
         if (fileList != null) {
+            File newWorkspaceDirectory = new File(newProjectCodeBasePath);
+            if (!newWorkspaceDirectory.exists()) {
+                newWorkspaceDirectory.mkdirs();
+            }
             for (File tempFile : fileList) {
                 if (tempFile.isDirectory()) {      // 文件夹
                     if (tempFile.getName().equals(".git") || tempFile.getName().equals(".idea")) {
                         continue;
                     }
-                    String newFilePath = getNewFilePath(param, tempFile.getAbsolutePath());
-                    // 新建文件夹
-                    File newFileDirectory = new File(newFilePath);
-                    if (!newFileDirectory.exists()) {
-                        newFileDirectory.mkdirs();
+                    String newFilePath = getNewFilePath(param, tempFile.getAbsolutePath(), true);
+                    if(newFilePath!=null){
+                        // 新建文件夹
+                        File newFileDirectory = new File(newFilePath);
+                        if (!newFileDirectory.exists()) {
+                            newFileDirectory.mkdirs();
+                        }
                     }
                     compileAndCloneGitProject(param, tempFile);
                 } else if (tempFile.isFile()) {    // 文件
                     String oldFilePath = tempFile.getAbsolutePath();
-                    String newFilePath = getNewFilePath(param, oldFilePath);
+                    String newFilePath = getNewFilePath(param, oldFilePath, false);
                     String newContent = instance.compileVelocityFile(getGitProjectPath(oldFilePath), context);
                     try {
+                        String[] arr = newFilePath.split("/");
+                        String[] newArr = Arrays.copyOf(arr, arr.length - 1);
+                        StringBuilder sb = new StringBuilder();
+                        for(String a : newArr){
+                            sb.append(a);
+                            sb.append("/");
+                        }
+                        File tmpFile = new File(sb.toString());
+                        if (!tmpFile.exists()) {
+                            tmpFile.mkdirs();
+                        }
                         Files.write(newContent.getBytes(), new File(newFilePath));
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -122,7 +141,7 @@ public class GeneratorServiceImpl implements GeneratorService {
      * @param oldFilePath
      * @return
      */
-    public String getNewFilePath(GenerateParam param, String oldFilePath) {
+    public String getNewFilePath(GenerateParam param, String oldFilePath, boolean isDirectory) {
         String newBasePackage = param.getBasePackage();
         VelocityUtils instance = VelocityUtils.getInstance(oldGitTemplateBasePath);
         VelocityContext context = new VelocityContext();
@@ -131,6 +150,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         context.put("rootVersion", param.getVersion());
         context.put("projectName", param.getProjectName());
         context.put("basePackage", param.getBasePackage());
+
         StringBuilder newFileBuild = new StringBuilder();
         if (File.separator.equals("\\")) {
             oldFilePath = oldFilePath.replaceAll("\\\\", "/");
@@ -144,6 +164,14 @@ public class GeneratorServiceImpl implements GeneratorService {
                 .replaceAll(oldBasePath2, newBasePath2)
                 .replaceAll(oldBasePackage2, newBasePackage2)
                 .replaceAll("@", "/");
+
+        if(isDirectory){
+            String tempOldBasePackage = oldBasePackage.replaceAll("\\.","/");
+            if(!oldFilePath.contains(tempOldBasePackage)){
+               return null;
+            }
+        }
+
         return instance.compileVelocityString(newfilePath, context);
     }
 

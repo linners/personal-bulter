@@ -1,3 +1,45 @@
+/* webkit内核，全局设置滚动条样式 */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* 横向滚动条样式 */
+::-webkit-scrollbar:horizontal {
+    height: 15px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(230, 230, 203, 0.8);
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 2px;
+    border-radius: 5px;
+    background: #ccc;
+    -webkit-box-shadow: inset 0 0 6px rgba(230, 230, 203, 0.8);
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+    background: #CEC8C8;
+}
+
+::-webkit-input-placeholder { /* WebKit browsers */
+    color:#c5c7ca;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:#c5c7ca;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:#c5c7ca;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:#c5c7ca;
+}
+
 html {
     width: 100%;
     height: 100%;
