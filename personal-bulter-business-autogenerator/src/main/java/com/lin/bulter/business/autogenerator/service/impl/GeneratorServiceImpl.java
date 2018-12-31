@@ -166,8 +166,16 @@ public class GeneratorServiceImpl implements GeneratorService {
                 .replaceAll("@", "/");
 
         if(isDirectory){
+            String[] oldPackageArr = oldBasePackage.split("\\.");
+            boolean flag = false;
+            for(String pack : oldPackageArr) {
+                if(newfilePath.endsWith(pack)){
+                    flag = true;
+                    break;
+                }
+            }
             String tempOldBasePackage = oldBasePackage.replaceAll("\\.","/");
-            if(!oldFilePath.contains(tempOldBasePackage)){
+            if(flag && !oldFilePath.contains(tempOldBasePackage)){
                return null;
             }
         }
