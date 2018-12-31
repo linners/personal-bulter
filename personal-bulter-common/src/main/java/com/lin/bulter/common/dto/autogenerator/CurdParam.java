@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CurdParam {
+    private String gitRepository;   // git 代码地址
+    private String branchName;      // git branch
     private boolean vue;            // 是否生成vue前端页面
     private boolean controller;     // 是否生成controller层
     private boolean service;        // 是否生成service层

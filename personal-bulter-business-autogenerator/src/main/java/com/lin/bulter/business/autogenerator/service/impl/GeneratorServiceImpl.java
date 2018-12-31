@@ -2,6 +2,7 @@ package com.lin.bulter.business.autogenerator.service.impl;
 
 import com.google.common.io.Files;
 import com.lin.bulter.business.autogenerator.GeneratorService;
+import com.lin.bulter.common.dto.autogenerator.CurdParam;
 import com.lin.bulter.common.dto.autogenerator.GenerateParam;
 import com.lin.bulter.common.utils.JGitUtils;
 import com.lin.bulter.common.utils.StringUtil;
@@ -30,20 +31,20 @@ public class GeneratorServiceImpl implements GeneratorService {
     private static final String oldBasePackage = "com.sprucetec.product.base";
     @Value("${generate.oldGitTemplateBasePath}")
     private String oldGitTemplateBasePath;             // git模板下载目录
+    @Value("${generate.oldGitTemplateBasePath2}")
+    private String oldGitTemplateBasePath2;             // git模板下载目录
     @Value("${generate.newProjectCodeBasePath}")
     private String newProjectCodeBasePath;             // 代码生成目录
     @Value("${generate.zipBasePath}")
     private String zipBasePath;                        // zip文件上传web服务器目录
 
+    /**
+     * 自动生成工程骨架
+     * @param param
+     * @return
+     */
     @Override
     public String generatorProject(GenerateParam param) {
-        return generate(param);
-    }
-
-    /**
-     * 自动生成
-     */
-    private String generate(GenerateParam param) {
         String newProjectName = param.getProjectName();
         String gitRepository = param.getGitRepository();
         String branchName = param.getBranchName();
@@ -74,6 +75,33 @@ public class GeneratorServiceImpl implements GeneratorService {
         JGitUtils.delFolder(newProjectCodeBasePath);
         logger.info(">>>>>>>>删除代码文件, 文件地址: {}", newProjectCodeBasePath);
         return zipFileName;
+    }
+
+    /**
+     * 自动生成增删改查逻辑代码
+     * @param param
+     * @return
+     */
+    @Override
+    public String generatorCrud(CurdParam param) {
+        String gitRepository = param.getGitRepository();
+        String branchName = param.getBranchName();
+        // 下载github上的工程模板
+        JGitUtils.cloneGitTemplate(gitRepository, oldGitTemplateBasePath2, branchName);
+        logger.info(">>>>>>>>git工程下载完毕, 下载地址: {}", oldGitTemplateBasePath2);
+        File file = new File(oldGitTemplateBasePath2);
+        File[] fileList = file.listFiles();
+        for (File tempFile : fileList) {
+            if (tempFile.isDirectory()) {      // 文件夹
+                if (tempFile.getName().equals(".git") || tempFile.getName().equals(".idea")) {
+                    continue;
+                }
+
+            }else if (tempFile.isFile()) {    // 文件
+
+            }
+        }
+        return null;
     }
 
     // 编译并克隆git
@@ -141,7 +169,7 @@ public class GeneratorServiceImpl implements GeneratorService {
      * @param oldFilePath
      * @return
      */
-    public String getNewFilePath(GenerateParam param, String oldFilePath, boolean isDirectory) {
+    private String getNewFilePath(GenerateParam param, String oldFilePath, boolean isDirectory) {
         String newBasePackage = param.getBasePackage();
         VelocityUtils instance = VelocityUtils.getInstance(oldGitTemplateBasePath);
         VelocityContext context = new VelocityContext();

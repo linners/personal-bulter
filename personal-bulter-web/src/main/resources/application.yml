@@ -10,6 +10,7 @@ server:
 
 generate:
   oldGitTemplateBasePath: e:/github-template
+  oldGitTemplateBasePath2: e:/github-template2
   newProjectCodeBasePath: e:/workspace-tmp
   zipBasePath: E:/tools/nginx-1.13.3/html/download
   downDomain: http://www.wenself.com

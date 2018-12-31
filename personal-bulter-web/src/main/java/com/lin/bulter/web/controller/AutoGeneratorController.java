@@ -1,6 +1,7 @@
 package com.lin.bulter.web.controller;
 
 import com.lin.bulter.business.autogenerator.GeneratorService;
+import com.lin.bulter.common.dto.autogenerator.CurdParam;
 import com.lin.bulter.common.dto.autogenerator.GenerateParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +44,8 @@ public class AutoGeneratorController {
      * @return
      */
     @PostMapping("/crud")
-    public String generateCrud(@RequestBody GenerateParam param) {
-        String zipPath = generatorService.generatorProject(param);
+    public String generateCrud(@RequestBody CurdParam param) {
+        String zipPath = generatorService.generatorCrud(param);
         String download = downDomain + "/download/" + zipPath;
         logger.info(">>>>>>>>自动生成结束, 下载地址: {}", download);
         return download;
