@@ -1,14 +1,14 @@
 package com.lin.bulter.repository.mysql.dao;
 
-import com.lin.bulter.common.dto.UserParam;
-import com.lin.bulter.repository.mysql.entity.User;
+import com.lin.bulter.common.dto.RoleParam;
+import com.lin.bulter.repository.mysql.entity.Role;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface UserMapper {
+public interface RoleMapper {
     
     /**
      *  按主键删除
@@ -18,25 +18,25 @@ public interface UserMapper {
     /**
      *  插入一条记录
      */
-    int insert(User record);
+    int insert(Role record);
 
     /**
      *  按主键查询
      */
-    User selectByPrimaryKey(Integer id);
+    Role selectByPrimaryKey(Integer id);
 
     /**
      *  查询所有记录
      */
-    List<User> selectAll();
+    List<Role> selectAll();
 
     /**
      *  按主键更新
      */
-    int updateByPrimaryKeySelective(User record);
+    int updateByPrimaryKeySelective(Role record);
 
     /**
      *  按条件分页查询
      */
-    List<User> selectByCondition(@Param("param") UserParam userParam);
+    List<Role> selectByCondition(@Param("param") RoleParam roleParam);
 }

@@ -20,12 +20,17 @@ public interface UserService {
      *
      * @return
      */
-    Integer updateByUserId(User user);
+    Integer updateUserById(User user);
 
     /**
      * 删除
      */
-    Integer deleteByUserId(Integer userId);
+    Integer deleteUserById(Integer userId);
+
+    /**
+     * 按主键查询
+     */
+    User selectUserById(Integer userId);
 
     /**
      * 查询所有

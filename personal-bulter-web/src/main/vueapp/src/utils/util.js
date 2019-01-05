@@ -1,5 +1,6 @@
 import Vue from 'vue'
-import { Message } from 'element-ui'
+import {Message} from 'element-ui'
+
 Vue.component(Message.name, Message)
 
 //sessionStorage

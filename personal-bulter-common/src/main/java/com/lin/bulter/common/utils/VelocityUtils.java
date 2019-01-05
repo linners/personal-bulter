@@ -3,7 +3,6 @@ package com.lin.bulter.common.utils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
-import java.io.File;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,9 +10,8 @@ import java.util.Properties;
 
 public class VelocityUtils {
 
-
-    private static VelocityEngine velocityEngine;
     private static Map<String, VelocityUtils> instanceMap = new HashMap<>();
+    private VelocityEngine velocityEngine;
 
     /**
      * 初始化velocity引擎
@@ -40,7 +38,7 @@ public class VelocityUtils {
 
 
     // 编译velocity字符串
-    public static String compileVelocityString(String content, VelocityContext context) {
+    public String compileVelocityString(String content, VelocityContext context) {
 
         //实例化一个StringWriter
         StringWriter writer = new StringWriter();
@@ -49,7 +47,7 @@ public class VelocityUtils {
     }
 
     // 编译velocity文件
-    public static String compileVelocityFile(String templatePath, VelocityContext context) {
+    public String compileVelocityFile(String templatePath, VelocityContext context) {
         //实例化一个StringWriter
         StringWriter writer = new StringWriter();
         velocityEngine.mergeTemplate(templatePath, "UTF-8", context, writer);
@@ -60,11 +58,12 @@ public class VelocityUtils {
 
     public static void main(String[] args) {
         VelocityContext context = new VelocityContext();
-        context.put("test", "");
-        context.put("test2", "");
-        VelocityUtils instance = VelocityUtils.getInstance("e:/github-template");
-        String str1 = instance.compileVelocityString("${test}/a/b/${test2}", context);
-        VelocityUtils instance2 = VelocityUtils.getInstance("e:/github-template");
-        String str2 = instance2.compileVelocityString("${test}/a/b/${test2}", context);
+//        context.put("test", "1212");
+//        context.put("test2", "3456");
+//        VelocityUtils instance = VelocityUtils.getInstance("e:/github-template");
+//        String str1 = instance.compileVelocityString("${test}/a/b/${test2}", context);
+        VelocityUtils instance2 = VelocityUtils.getInstance("e:/github-template2");
+        String str2 = instance2.compileVelocityFile("/controller/${entityNameUp}Controller.java", context);
+        System.out.println(str2);
     }
 }

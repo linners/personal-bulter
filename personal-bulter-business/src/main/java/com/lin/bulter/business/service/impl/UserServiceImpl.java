@@ -26,14 +26,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Integer updateByUserId(User user) {
-        return userMapper.updateByPrimaryKey(user);
+    public Integer updateUserById(User user) {
+        return userMapper.updateByPrimaryKeySelective(user);
     }
 
     @Override
     @Transactional
-    public Integer deleteByUserId(Integer userId) {
+    public Integer deleteUserById(Integer userId) {
         return userMapper.deleteByPrimaryKey(userId);
+    }
+
+    @Override
+    public User selectUserById(Integer userId) {
+        return userMapper.selectByPrimaryKey(userId);
     }
 
     @Override

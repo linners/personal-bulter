@@ -14,7 +14,7 @@ public class JGitUtils {
     public static void cloneGitTemplate(String gitRepository, String gitBasePath, String branchName) {
         File gitFile = new File(gitBasePath);
         try {
-            if (gitFile.exists()) {
+            if (gitFile.exists() && gitFile.listFiles()!=null && gitFile.listFiles().length>0) {
                 git = Git.open(gitFile);
             } else {
                 git = Git.cloneRepository().setURI(gitRepository).setDirectory(gitFile).call();

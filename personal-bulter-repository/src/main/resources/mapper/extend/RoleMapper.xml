@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lin.bulter.repository.mysql.dao.RoleMapper">
+
+    <!-- 分页查询 -->
+    <select id="selectByCondition" resultMap="BaseResultMap">
+      select
+        <include refid="Base_Column_List" />
+      from
+        t_role
+      <where>
+        <if test="param.id != null">
+            id = #{param.id}
+        </if>
+        <if test="param.roleName != null">
+            role_name = #{param.roleName}
+        </if>
+        <if test="param.roleDesc != null">
+            role_desc = #{param.roleDesc}
+        </if>
+        <if test="param.fGroupId != null">
+            f_group_id = #{param.fGroupId}
+        </if>
+        <if test="param.cT != null">
+            c_t = #{param.cT}
+        </if>
+        <if test="param.uT != null">
+            u_t = #{param.uT}
+        </if>
+        
+      </where>
+    </select>
+</mapper>

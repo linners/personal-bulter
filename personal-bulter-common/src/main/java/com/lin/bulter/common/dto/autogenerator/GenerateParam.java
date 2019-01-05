@@ -11,6 +11,8 @@ public class GenerateParam {
     // git地址
     private String gitRepository;
     private String branchName;
+    // git工程，包名
+    private String oldBasePackage;
     // maven相关
     private String rootGroupId;
     private String rootArtifactId;

@@ -35,7 +35,7 @@
 </template>
 
 <script>
-	import AuthUtils from '@/utils/AuthUtils';
+  import AuthUtils from '@/utils/AuthUtils';
 
   let myMixin = {
     data: function() {

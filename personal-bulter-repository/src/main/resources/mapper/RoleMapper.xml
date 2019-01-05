@@ -1,45 +1,57 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.lin.bulter.repository.mysql.dao.UserMapper">
+<mapper namespace="com.lin.bulter.repository.mysql.dao.RoleMapper">
 
-    <resultMap id="BaseResultMap" type="com.lin.bulter.repository.mysql.entity.User">
+    <resultMap id="BaseResultMap" type="com.lin.bulter.repository.mysql.entity.Role">
         <!--
           WARNING - @generated
         -->
         <id column="id" property="id" jdbcType="INTEGER"/>
         <result column="id" property="id"/>
-        <result column="user_name" property="userName"/>
-        <result column="pass_word" property="passWord"/>
+        <result column="role_name" property="roleName"/>
+        <result column="role_desc" property="roleDesc"/>
+        <result column="f_group_id" property="fGroupId"/>
+        <result column="c_t" property="cT"/>
+        <result column="u_t" property="uT"/>
         
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, user_name, pass_word 
+        id, role_name, role_desc, f_group_id, c_t, u_t 
     </sql>
 
     <!-- 新增 -->
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.lin.bulter.repository.mysql.entity.User">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.lin.bulter.repository.mysql.entity.Role">
         <!--
           WARNING - @generated
         -->
-        insert into t_user (
-          id, user_name, pass_word  )
+        insert into t_role (
+          id, role_name, role_desc, f_group_id, c_t, u_t  )
         values (
-          #{id}, #{userName}, #{passWord}  )
+          #{id}, #{roleName}, #{roleDesc}, #{fGroupId}, #{cT}, #{uT}  )
     </insert>
 
     <!-- 按条件修改 -->
-    <update id="updateByPrimaryKeySelective" parameterType="com.lin.bulter.repository.mysql.entity.User">
+    <update id="updateByPrimaryKeySelective" parameterType="com.lin.bulter.repository.mysql.entity.Role">
         <!--
           WARNING - @generated
         -->
-        update t_user
+        update t_role
         <set>
-          <if test="userName != null">
-            user_name = #{userName},
+          <if test="roleName != null">
+            role_name = #{roleName},
           </if>
-          <if test="passWord != null">
-            pass_word = #{passWord}
+          <if test="roleDesc != null">
+            role_desc = #{roleDesc},
+          </if>
+          <if test="fGroupId != null">
+            f_group_id = #{fGroupId},
+          </if>
+          <if test="cT != null">
+            c_t = #{cT},
+          </if>
+          <if test="uT != null">
+            u_t = #{uT}
           </if>
           
         </set>
@@ -51,7 +63,7 @@
         <!--
           WARNING - @generated
         -->
-        delete from t_user
+        delete from t_role
         where id = #{id,jdbcType=INTEGER}
     </delete>
 
@@ -62,7 +74,7 @@
         -->
         select 
           <include refid="Base_Column_List" />
-        from t_user
+        from t_role
         where id = #{id,jdbcType=INTEGER}
     </select>
 
@@ -73,6 +85,6 @@
         -->
         select 
           <include refid="Base_Column_List" />
-        from t_user
+        from t_role
     </select>
 </mapper>

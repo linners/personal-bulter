@@ -12,12 +12,12 @@
 </template>
 
 <script>
-    import DateUtil from '../utils/dateutil'
-	import echarts from 'echarts';
-	import themeData from '../assets/westeros.json'
-	import FormatUtil from '../utils/formatutil'
+  import DateUtil from '../utils/dateutil'
+  import echarts from 'echarts';
+  import themeData from '../assets/westeros.json'
+  import FormatUtil from '../utils/formatutil'
 
-	export default {
+  export default {
 		name: 'EchartShow',
 		props: {
 			hasAuth: {
