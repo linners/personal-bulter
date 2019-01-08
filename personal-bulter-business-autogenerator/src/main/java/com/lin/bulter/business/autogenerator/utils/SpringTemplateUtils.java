@@ -1,12 +1,12 @@
 package com.lin.bulter.business.autogenerator.utils;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.lin.bulter.common.dto.datasourceinfo.DatabaseInfo;
+import com.lin.bulter.common.dto.datasourceinfo.TableInfo;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SpringTemplateUtils {
 

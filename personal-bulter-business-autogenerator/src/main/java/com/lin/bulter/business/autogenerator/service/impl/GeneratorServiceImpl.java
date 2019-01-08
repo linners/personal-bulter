@@ -1,11 +1,11 @@
 package com.lin.bulter.business.autogenerator.service.impl;
 
-import com.lin.bulter.business.autogenerator.GeneratorService;
-import com.lin.bulter.business.autogenerator.model.DatabaseInfo;
-import com.lin.bulter.business.autogenerator.model.TableColumn;
-import com.lin.bulter.business.autogenerator.model.TableInfo;
+import com.lin.bulter.business.autogenerator.service.GeneratorService;
 import com.lin.bulter.common.dto.autogenerator.CurdParam;
 import com.lin.bulter.common.dto.autogenerator.GenerateParam;
+import com.lin.bulter.common.dto.datasourceinfo.DatabaseInfo;
+import com.lin.bulter.common.dto.datasourceinfo.TableColumnInfo;
+import com.lin.bulter.common.dto.datasourceinfo.TableInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class GeneratorServiceImpl implements GeneratorService {
     }
 
     @Override
-    public List<TableColumn> getTableColumns(String tableName) {
+    public List<TableColumnInfo> getTableColumns(String tableName) {
         return null;
     }
 }

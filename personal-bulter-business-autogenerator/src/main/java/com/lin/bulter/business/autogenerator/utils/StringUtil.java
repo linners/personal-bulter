@@ -1,5 +1,7 @@
 package com.lin.bulter.business.autogenerator.utils;
 
+import java.util.List;
+
 public class StringUtil {
 
     /**
@@ -110,5 +112,22 @@ public class StringUtil {
             }
         }
         return result.toString();
+    }
+
+    /**
+     * list 转 逗号分隔的字符串
+     * @param list
+     * @param <T>
+     * @return
+     */
+    public static <T> String transformListToStr(List<T> list) {
+        if(list==null || list.size()==0) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for(T t : list) {
+            sb.append(",").append("'").append(t.toString()).append("'");
+        }
+        return sb.toString().substring(1);
     }
 }

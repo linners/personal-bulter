@@ -1,6 +1,6 @@
 package com.lin.bulter.web.controller;
 
-import com.lin.bulter.business.autogenerator.GeneratorService;
+import com.lin.bulter.business.autogenerator.service.GeneratorService;
 import com.lin.bulter.common.dto.autogenerator.CurdParam;
 import com.lin.bulter.common.dto.autogenerator.GenerateParam;
 import org.slf4j.Logger;

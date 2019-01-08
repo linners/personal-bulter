@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,12 +30,12 @@ public class CurdParam {
     private String entityPackage;   // entity层package
     private String paramPackage;    // param层package
 
-    private String entityName;      // entity名称
+    private List<CurdEntityInfo> dbConfig;        // 数据库相关的配置
 
-    private boolean xml;            // 是否生成mybaits xml
+//    private String entityName;      // entity名称
 
-    private Integer datasourceId;   // 数据源id
-    private String dbName;          // 数据库名称
-    private String tableName;       // 要逆向操作的数据库表名
+//    private Integer datasourceId;   // 数据源id
+//    private String dbName;          // 数据库名称
+//    private String tableName;       // 要逆向操作的数据库表名
 
 }

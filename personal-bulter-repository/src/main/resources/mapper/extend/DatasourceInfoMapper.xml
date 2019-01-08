@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lin.bulter.repository.mysql.dao.DatasourceInfoMapper">
+
+    <!-- 分页查询 -->
+    <select id="selectByCondition" resultMap="BaseResultMap">
+      select
+        <include refid="Base_Column_List" />
+      from
+        t_datasource_info
+      <where>
+        <if test="param.id != null">
+            id = #{param.id}
+        </if>
+        <if test="param.datasourceName != null">
+            datasource_name = #{param.datasourceName}
+        </if>
+        <if test="param.dbIp != null">
+            db_ip = #{param.dbIp}
+        </if>
+        <if test="param.dbPort != null">
+            db_port = #{param.dbPort}
+        </if>
+        <if test="param.userName != null">
+            user_name = #{param.userName}
+        </if>
+        <if test="param.password != null">
+            password = #{param.password}
+        </if>
+        
+      </where>
+    </select>
+</mapper>

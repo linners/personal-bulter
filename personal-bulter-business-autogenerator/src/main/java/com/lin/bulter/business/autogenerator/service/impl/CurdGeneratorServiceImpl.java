@@ -1,11 +1,12 @@
 package com.lin.bulter.business.autogenerator.service.impl;
 
 import com.google.common.io.Files;
-import com.lin.bulter.business.autogenerator.DatasourceService;
-import com.lin.bulter.business.autogenerator.model.TableColumn;
+import com.lin.bulter.business.autogenerator.service.DatasourceInfoService;
 import com.lin.bulter.business.autogenerator.utils.StringUtil;
+import com.lin.bulter.common.dto.autogenerator.CurdEntityInfo;
 import com.lin.bulter.common.dto.autogenerator.CurdParam;
 import com.lin.bulter.common.dto.autogenerator.CurdParamExtend;
+import com.lin.bulter.common.dto.datasourceinfo.TableColumnInfo;
 import com.lin.bulter.common.utils.BeanUtil;
 import com.lin.bulter.common.utils.JGitUtils;
 import com.lin.bulter.common.utils.VelocityUtils;
@@ -22,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -43,7 +45,7 @@ public class CurdGeneratorServiceImpl {
     private String zipBasePath;                        // zip文件上传web服务器目录
 
     @Autowired
-    private DatasourceService datasourceService;
+    private DatasourceInfoService datasourceService;
 
     /**
      * 自动生成增删改查逻辑代码
@@ -52,18 +54,20 @@ public class CurdGeneratorServiceImpl {
      */
     public String generatorCrud(CurdParam param) {
         // 初始化参数
-        CurdParamExtend curdParamExtend = initCurdParamExtendInfo(param);
-        String gitRepository = curdParamExtend.getGitRepository();
-        String gitProjectPath = curdParamExtend.getGitProjectPath();
-        String branchName = curdParamExtend.getBranchName();
-        String generatedCurdCodePath = curdParamExtend.getGeneratedCurdCodePath();
+        List<CurdParamExtend> curdParamExtends = initCurdParamExtendInfo(param);
+        String gitRepository = curdParamExtends.get(0).getGitRepository();
+        String gitProjectPath = curdParamExtends.get(0).getGitProjectPath();
+        String branchName = curdParamExtends.get(0).getBranchName();
+        String generatedCurdCodePath = curdParamExtends.get(0).getGeneratedCurdCodePath();
 
         // 下载github上的工程模板
         JGitUtils.cloneGitTemplate(gitRepository, gitProjectPath, branchName);
         logger.info(">>>>>>>>git工程下载完毕, 下载地址: {}", gitProjectPath);
 
         // 编译并生成文件
-        compileAndGenerateCurdFile(curdParamExtend, new File(gitProjectPath));
+        for(CurdParamExtend curdParamExtend : curdParamExtends){
+            compileAndGenerateCurdFile(curdParamExtend, new File(gitProjectPath));
+        }
         logger.info(">>>>>>>>代码生成完毕，生成目录: {}", generatedCurdCodePath);
 
         // 压缩zip
@@ -85,8 +89,8 @@ public class CurdGeneratorServiceImpl {
     }
 
     // 初始化参数
-    private CurdParamExtend initCurdParamExtendInfo(CurdParam param) {
-        CurdParamExtend result = BeanUtil.copy(param, CurdParamExtend::new);
+    private List<CurdParamExtend> initCurdParamExtendInfo(CurdParam param) {
+        List<CurdParamExtend> resultList = new ArrayList<>();
 
         String newProjectName = param.getProjectName() + "_curd_code";
         String gitRepository = param.getGitRepository();
@@ -108,21 +112,6 @@ public class CurdGeneratorServiceImpl {
         if (!oldGitProjectFile.exists()) {
             oldGitProjectFile.mkdirs();
         }
-
-        // 组装velocityUtil实例 和 VelocityContext
-        VelocityUtils velocityInstance = VelocityUtils.getInstance(oldGitProjectPath);
-        VelocityContext velocityContext = new VelocityContext();
-        velocityContext.put("entityNameUp", param.getEntityName());
-        velocityContext.put("entityName", StringUtil.lowerFirst(param.getEntityName()));
-        velocityContext.put("controllerPackage", param.getControllerPackage());
-        velocityContext.put("servicePackage", param.getServicePackage());
-        velocityContext.put("entityPackage", param.getEntityPackage());
-        velocityContext.put("paramPackage", param.getParamPackage());
-        velocityContext.put("mapperPackage", param.getMapperPackage());
-        velocityContext.put("tableName", param.getTableName());
-        List<TableColumn> tableColumns = datasourceService.getAllTableColumnsByTableName(param.getDatasourceId(), param.getDbName(), param.getTableName());
-        velocityContext.put("columns", tableColumns);
-
         // 要生成的project路径，若已经存在，删除
         String generatedCurdCodePath = newProjectCodeBasePath + File.separator + newProjectName;
         if (File.separator.equals("\\")) {
@@ -133,17 +122,46 @@ public class CurdGeneratorServiceImpl {
             JGitUtils.delFolder(generatedCurdCodePath);
         }
 
-        // 组装结果返回
+        List<CurdEntityInfo> dbConfigs = param.getDbConfig();
+        for(CurdEntityInfo curdEntityInfo : dbConfigs) {
+            CurdParamExtend result = BeanUtil.copy(param, CurdParamExtend::new);
+            // 组装velocityUtil实例 和 VelocityContext
+            VelocityUtils velocityInstance = VelocityUtils.getInstance(oldGitProjectPath);
+            VelocityContext velocityContext = new VelocityContext();
+            velocityContext.put("controllerPackage", param.getControllerPackage());
+            velocityContext.put("servicePackage", param.getServicePackage());
+            velocityContext.put("entityPackage", param.getEntityPackage());
+            velocityContext.put("paramPackage", param.getParamPackage());
+            velocityContext.put("mapperPackage", param.getMapperPackage());
 
-        result.setGitProjectPath(oldGitProjectPath);
-        result.setInstance(velocityInstance);
-        result.setContext(velocityContext);
-        result.setGeneratedCurdCodePath(generatedCurdCodePath);
-        return result;
+    //        velocityContext.put("entityNameUp", param.getEntityName());
+    //        velocityContext.put("entityName", StringUtil.lowerFirst(param.getEntityName()));
+    //        velocityContext.put("tableName", param.getTableName());
+    //        List<TableColumnInfo> tableColumns = datasourceService.getAllTableColumnsByTableName(param.getDatasourceId(), param.getDbName(), param.getTableName());
+    //        velocityContext.put("columns", tableColumns);
+
+            velocityContext.put("entityNameUp", curdEntityInfo.getEntityName());
+            velocityContext.put("entityName", StringUtil.lowerFirst(curdEntityInfo.getEntityName()));
+            velocityContext.put("tableName", curdEntityInfo.getTableName());
+            List<TableColumnInfo> tableColumns = curdEntityInfo.getTableColumns();
+            for(TableColumnInfo column : tableColumns) {
+                column.setFieldName(StringUtil.camelName(column.getColumnName()));
+                column.setFieldType(StringUtil.sqlType2JavaType(column.getDataType()));
+            }
+            velocityContext.put("columns", tableColumns);
+            // 组装结果返回
+            result.setGitProjectPath(oldGitProjectPath);
+            result.setInstance(velocityInstance);
+            result.setContext(velocityContext);
+            result.setGeneratedCurdCodePath(generatedCurdCodePath);
+            resultList.add(result);
+        }
+        return resultList;
     }
 
     // 编译并生成文件
     private void compileAndGenerateCurdFile(CurdParamExtend param, File file) {
+        VelocityContext context = param.getContext();
         File[] fileList = file.listFiles();
         for (File tempFile : fileList) {
             if (tempFile.isDirectory()) {      // 文件夹
@@ -156,42 +174,42 @@ public class CurdGeneratorServiceImpl {
                 // controller层代码
                 if(param.isController() && tempFileAbsolutePath.endsWith("Controller.java")){
                     generateControllerCode(param, tempFileAbsolutePath);
-                    logger.info(">>>>>>>>{}层代码生成完毕！", "controller");
+                    logger.info(">>>>>>>>{}代码生成完毕！", context.get("entityNameUp")+"Controller");
                 }
                 // service层代码
                 if(param.isService() && tempFileAbsolutePath.endsWith("Service.java")){
                     generateServiceCode(param, tempFileAbsolutePath);
-                    logger.info(">>>>>>>>{}层代码生成完毕！", "service");
+                    logger.info(">>>>>>>>{}代码生成完毕！",  context.get("entityNameUp")+"Service");
                 }
                 // service impl层代码
                 if(param.isService() && tempFileAbsolutePath.endsWith("ServiceImpl.java")){
                     generateServiceImplCode(param, tempFileAbsolutePath);
-                    logger.info(">>>>>>>>{}层代码生成完毕！", "service");
+                    logger.info(">>>>>>>>{}代码生成完毕！",  context.get("entityNameUp")+"Service");
                 }
                 // param代码
                 if(param.isMapper() && tempFileAbsolutePath.endsWith("Param.java")){
                     generateParamCode(param, tempFileAbsolutePath);
-                    logger.info(">>>>>>>>{}参数代码生成完毕！", "param");
+                    logger.info(">>>>>>>>{}参数代码生成完毕！",  context.get("entityNameUp")+"Param");
                 }
                 // entity代码
                 if(param.isMapper() && tempFileAbsolutePath.endsWith("Entity.java")){
                     generateEntityCode(param, tempFileAbsolutePath);
-                    logger.info(">>>>>>>>{}代码生成完毕！", "entity");
+                    logger.info(">>>>>>>>{}代码生成完毕！",  context.get("entityNameUp")+"Entity");
                 }
                 // mapper层代码
                 if(param.isMapper() && tempFileAbsolutePath.endsWith("Mapper.java")){
                     generateMapperCode(param, tempFileAbsolutePath);
-                    logger.info(">>>>>>>>{}层代码生成完毕！", "mapper");
+                    logger.info(">>>>>>>>{}层代码生成完毕！",  context.get("entityNameUp")+"Mapper");
                 }
                 // mapper xml代码
                 if(param.isMapper() && tempFileAbsolutePath.endsWith("Mapper.xml")){
                     generateMapperXmlCode(param, tempFileAbsolutePath);
-                    logger.info(">>>>>>>>{} xml代码生成完毕！", "mapper");
+                    logger.info(">>>>>>>>{} xml代码生成完毕！",  context.get("entityNameUp")+"Mapper");
                 }
                 // mapper xml代码
                 if(param.isMapper() && tempFileAbsolutePath.endsWith("MapperExtend.xml")){
                     generateMapperXmlExtendCode(param, tempFileAbsolutePath);
-                    logger.info(">>>>>>>>{} xml 代码生成完毕！", "mapper extend");
+                    logger.info(">>>>>>>>{} xml 代码生成完毕！",  context.get("entityNameUp")+"Mapper extend");
                 }
             }
         }

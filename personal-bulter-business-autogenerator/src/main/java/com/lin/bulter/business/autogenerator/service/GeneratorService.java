@@ -1,10 +1,10 @@
-package com.lin.bulter.business.autogenerator;
+package com.lin.bulter.business.autogenerator.service;
 
-import com.lin.bulter.business.autogenerator.model.DatabaseInfo;
-import com.lin.bulter.business.autogenerator.model.TableColumn;
-import com.lin.bulter.business.autogenerator.model.TableInfo;
 import com.lin.bulter.common.dto.autogenerator.CurdParam;
 import com.lin.bulter.common.dto.autogenerator.GenerateParam;
+import com.lin.bulter.common.dto.datasourceinfo.DatabaseInfo;
+import com.lin.bulter.common.dto.datasourceinfo.TableColumnInfo;
+import com.lin.bulter.common.dto.datasourceinfo.TableInfo;
 
 import java.util.List;
 
@@ -41,5 +41,5 @@ public interface GeneratorService {
      * @param tableName
      * @return
      */
-    List<TableColumn> getTableColumns(String tableName);
+    List<TableColumnInfo> getTableColumns(String tableName);
 }
