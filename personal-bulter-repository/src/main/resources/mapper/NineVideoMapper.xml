@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lin.bulter.repository.mysql.dao.NineVideoMapper">
+
+    <resultMap id="BaseResultMap" type="com.lin.bulter.repository.mysql.entity.NineVideo">
+        <!--
+          WARNING - @generated
+        -->
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="id" property="id"/>
+        <result column="video" property="video"/>
+        <result column="title" property="title"/>
+        <result column="img" property="img"/>
+        
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, video, title, img 
+    </sql>
+
+    <!-- 新增 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.lin.bulter.repository.mysql.entity.NineVideo">
+        <!--
+          WARNING - @generated
+        -->
+        insert into t_video (
+          id, video, title, img  )
+        values (
+          #{id}, #{video}, #{title}, #{img}  )
+    </insert>
+
+    <!-- 按条件修改 -->
+    <update id="updateByPrimaryKeySelective" parameterType="com.lin.bulter.repository.mysql.entity.NineVideo">
+        <!--
+          WARNING - @generated
+        -->
+        update t_video
+        <set>
+          <if test="video != null">
+            video = #{video},
+          </if>
+          <if test="title != null">
+            title = #{title},
+          </if>
+          <if test="img != null">
+            img = #{img}
+          </if>
+          
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- 按主键删除 -->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        <!--
+          WARNING - @generated
+        -->
+        delete from t_video
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!-- 按主键查询 -->
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        <!--
+          WARNING - @generated
+        -->
+        select 
+          <include refid="Base_Column_List" />
+        from t_video
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="selectAll" resultMap="BaseResultMap">
+        <!--
+          WARNING - @generated
+        -->
+        select 
+          <include refid="Base_Column_List" />
+        from t_video
+    </select>
+</mapper>
