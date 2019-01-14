@@ -135,6 +135,11 @@
                 <version>2.1.1.RELEASE</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.ant</groupId>
+                <artifactId>ant</artifactId>
+                <version>1.10.3</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

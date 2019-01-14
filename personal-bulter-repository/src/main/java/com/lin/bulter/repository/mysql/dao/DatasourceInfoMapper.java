@@ -39,4 +39,8 @@ public interface DatasourceInfoMapper {
      *  按条件分页查询
      */
     List<DatasourceInfo> selectByCondition(@Param("param") DatasourceInfoParam datasourceInfoParam);
+
+    Integer insertSelective(DatasourceInfo datasourceInfo);
+
+    void updateByPrimaryKey(DatasourceInfo datasourceInfo);
 }
