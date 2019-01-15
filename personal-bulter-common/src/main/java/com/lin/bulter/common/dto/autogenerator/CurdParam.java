@@ -15,6 +15,7 @@ public class CurdParam {
     private String branchName;      // git branch
 
     private String projectName;     // 需要生成增删改查的工程名称
+    private String basePackage;     // 基础包名
 
     private boolean vue;            // 是否生成vue前端页面
 
@@ -30,7 +31,11 @@ public class CurdParam {
     private String entityPackage;   // entity层package
     private String paramPackage;    // param层package
 
-    private List<CurdEntityInfo> dbConfig;        // 数据库相关的配置
+    private boolean api;            // 是否生成api层
+    private String apiPackage;     // api层package
+
+    // 数据库相关的配置
+    private List<CurdEntityInfo> dbConfig;
 
 //    private String entityName;      // entity名称
 

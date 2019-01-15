@@ -61,7 +61,7 @@ public class CurdGeneratorServiceImpl {
         String generatedCurdCodePath = curdParamExtends.get(0).getGeneratedCurdCodePath();
 
         // 下载github上的工程模板
-        JGitUtils.cloneGitTemplate(gitRepository, gitProjectPath, branchName);
+//        JGitUtils.cloneGitTemplate(gitRepository, gitProjectPath, branchName);
         logger.info(">>>>>>>>git工程下载完毕, 下载地址: {}", gitProjectPath);
 
         // 编译并生成文件
@@ -83,7 +83,7 @@ public class CurdGeneratorServiceImpl {
         logger.info(">>>>>>>>代码zip文件生成完毕, 生成地址: {}", zipPath);
 
         // 压缩完毕后，删除新生成的文件
-        JGitUtils.delFolder(generatedCurdCodePath);
+//        JGitUtils.delFolder(generatedCurdCodePath);
         logger.info(">>>>>>>>删除代码文件, 文件地址: {}", generatedCurdCodePath);
         return zipFileName;
     }
@@ -133,6 +133,8 @@ public class CurdGeneratorServiceImpl {
             velocityContext.put("entityPackage", param.getEntityPackage());
             velocityContext.put("paramPackage", param.getParamPackage());
             velocityContext.put("mapperPackage", param.getMapperPackage());
+            velocityContext.put("apiPackage", param.getApiPackage());
+            velocityContext.put("basePackage", param.getBasePackage());
 
     //        velocityContext.put("entityNameUp", param.getEntityName());
     //        velocityContext.put("entityName", StringUtil.lowerFirst(param.getEntityName()));
@@ -184,7 +186,7 @@ public class CurdGeneratorServiceImpl {
                 // service impl层代码
                 if(param.isService() && tempFileAbsolutePath.endsWith("ServiceImpl.java")){
                     generateServiceImplCode(param, tempFileAbsolutePath);
-                    logger.info(">>>>>>>>{}代码生成完毕！",  context.get("entityNameUp")+"Service");
+                    logger.info(">>>>>>>>{}代码生成完毕！",  context.get("entityNameUp")+"ServiceImpl");
                 }
                 // param代码
                 if(param.isMapper() && tempFileAbsolutePath.endsWith("Param.java")){
@@ -211,6 +213,24 @@ public class CurdGeneratorServiceImpl {
                     generateMapperXmlExtendCode(param, tempFileAbsolutePath);
                     logger.info(">>>>>>>>{} xml 代码生成完毕！",  context.get("entityNameUp")+"Mapper extend");
                 }
+
+                // api层代码
+                if(param.isApi() && tempFileAbsolutePath.endsWith("Api.java")){
+                    generateApiCode(param, tempFileAbsolutePath);
+                    logger.info(">>>>>>>>{}代码生成完毕！",  context.get("entityNameUp")+"Api");
+                }
+
+                // api impl 代码
+                if(param.isApi() && tempFileAbsolutePath.endsWith("ApiImpl.java")){
+                    generateApiImplCode(param, tempFileAbsolutePath);
+                    logger.info(">>>>>>>>{}代码生成完毕！",  context.get("entityNameUp")+"ApiImpl");
+                }
+
+                // api层 dto 代码
+                if(param.isApi() && tempFileAbsolutePath.endsWith("Dto.java")){
+                    generateDtoCode(param, tempFileAbsolutePath);
+                    logger.info(">>>>>>>>{}代码生成完毕！",  context.get("entityNameUp")+"Dto");
+                }
             }
         }
     }
@@ -225,6 +245,36 @@ public class CurdGeneratorServiceImpl {
         String controllerPackage = param.getControllerPackage();
         String controllerPackFilePath = controllerPackage.replaceAll("\\.", "/");
         String newFilePath = generatedCurdCodePath + "/"  + controllerPackFilePath + "/" + context.get("entityNameUp") + "Controller.java";
+
+        String newContent = instance.compileVelocityFile(getGitProjectPath(gitProjectPath, templateFilePath), context);
+        writeNewContentToFile(newFilePath, newContent);
+    }
+
+    // 生成api层代码
+    private void generateApiCode(CurdParamExtend param, String templateFilePath) {
+        VelocityUtils instance = param.getInstance();
+        VelocityContext context = param.getContext();
+        String gitProjectPath = param.getGitProjectPath();
+        String generatedCurdCodePath = param.getGeneratedCurdCodePath();
+
+        String apiPackage = param.getApiPackage();
+        String apiPackFilePath = apiPackage.replaceAll("\\.", "/");
+        String newFilePath = generatedCurdCodePath + "/"  + apiPackFilePath + "/" + context.get("entityNameUp") + "Api.java";
+
+        String newContent = instance.compileVelocityFile(getGitProjectPath(gitProjectPath, templateFilePath), context);
+        writeNewContentToFile(newFilePath, newContent);
+    }
+
+    // 生成service impl层代码
+    private void generateApiImplCode(CurdParamExtend param, String templateFilePath) {
+        VelocityUtils instance = param.getInstance();
+        VelocityContext context = param.getContext();
+        String gitProjectPath = param.getGitProjectPath();
+        String generatedCurdCodePath = param.getGeneratedCurdCodePath();
+
+        String apiPackage = param.getApiPackage();
+        String apiPackFilePath = apiPackage.replaceAll("\\.", "/");
+        String newFilePath = generatedCurdCodePath + "/"  + apiPackFilePath + "/impl/" + context.get("entityNameUp") + "ApiImpl.java";
 
         String newContent = instance.compileVelocityFile(getGitProjectPath(gitProjectPath, templateFilePath), context);
         writeNewContentToFile(newFilePath, newContent);
@@ -260,7 +310,7 @@ public class CurdGeneratorServiceImpl {
         writeNewContentToFile(newFilePath, newContent);
     }
 
-    // 生成param代码
+    // 生成Param代码
     private void generateParamCode(CurdParamExtend param, String templateFilePath) {
         VelocityUtils instance = param.getInstance();
         VelocityContext context = param.getContext();
@@ -270,6 +320,21 @@ public class CurdGeneratorServiceImpl {
         String paramPackage = param.getParamPackage();
         String paramPackFilePath = paramPackage.replaceAll("\\.", "/");
         String newFilePath = generatedCurdCodePath + "/"  + paramPackFilePath + "/" + context.get("entityNameUp") + "Param.java";
+
+        String newContent = instance.compileVelocityFile(getGitProjectPath(gitProjectPath, templateFilePath), context);
+        writeNewContentToFile(newFilePath, newContent);
+    }
+
+    // 生成Dto代码
+    private void generateDtoCode(CurdParamExtend param, String templateFilePath) {
+        VelocityUtils instance = param.getInstance();
+        VelocityContext context = param.getContext();
+        String gitProjectPath = param.getGitProjectPath();
+        String generatedCurdCodePath = param.getGeneratedCurdCodePath();
+
+        String paramPackage = param.getParamPackage();
+        String paramPackFilePath = paramPackage.replaceAll("\\.", "/");
+        String newFilePath = generatedCurdCodePath + "/"  + paramPackFilePath + "/" + context.get("entityNameUp") + "Dto.java";
 
         String newContent = instance.compileVelocityFile(getGitProjectPath(gitProjectPath, templateFilePath), context);
         writeNewContentToFile(newFilePath, newContent);
