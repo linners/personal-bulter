@@ -61,7 +61,7 @@ public class CurdGeneratorServiceImpl {
         String generatedCurdCodePath = curdParamExtends.get(0).getGeneratedCurdCodePath();
 
         // 下载github上的工程模板
-//        JGitUtils.cloneGitTemplate(gitRepository, gitProjectPath, branchName);
+        JGitUtils.cloneGitTemplate(gitRepository, gitProjectPath, branchName);
         logger.info(">>>>>>>>git工程下载完毕, 下载地址: {}", gitProjectPath);
 
         // 编译并生成文件
@@ -83,7 +83,7 @@ public class CurdGeneratorServiceImpl {
         logger.info(">>>>>>>>代码zip文件生成完毕, 生成地址: {}", zipPath);
 
         // 压缩完毕后，删除新生成的文件
-//        JGitUtils.delFolder(generatedCurdCodePath);
+        JGitUtils.delFolder(generatedCurdCodePath);
         logger.info(">>>>>>>>删除代码文件, 文件地址: {}", generatedCurdCodePath);
         return zipFileName;
     }
