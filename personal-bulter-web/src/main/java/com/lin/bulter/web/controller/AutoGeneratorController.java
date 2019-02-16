@@ -1,5 +1,6 @@
 package com.lin.bulter.web.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.lin.bulter.business.autogenerator.service.GeneratorService;
 import com.lin.bulter.common.dto.autogenerator.CurdParam;
 import com.lin.bulter.common.dto.autogenerator.GenerateParam;
@@ -26,6 +27,7 @@ public class AutoGeneratorController {
 
     /**
      * 生成整个工程框架
+     *
      * @param param
      * @return
      */
@@ -40,11 +42,13 @@ public class AutoGeneratorController {
     /**
      * 生成增删改查
      * 包括controller / service  / dao / mapper.xml
+     *
      * @param param
      * @return
      */
     @PostMapping("/crud")
     public String generateCrud(@RequestBody CurdParam param) {
+        logger.info("CurdParam参数：{}", JSON.toJSON(param));
         String zipPath = generatorService.generatorCrud(param);
         String download = downDomain + "/download/" + zipPath;
         logger.info(">>>>>>>>自动生成结束, 下载地址: {}", download);

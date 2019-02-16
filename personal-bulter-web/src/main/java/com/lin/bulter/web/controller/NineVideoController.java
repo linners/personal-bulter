@@ -3,10 +3,8 @@ package com.lin.bulter.web.controller;
 import com.github.pagehelper.PageInfo;
 import com.lin.bulter.business.service.NineVideoService;
 import com.lin.bulter.common.dto.NineVideoParam;
-import com.lin.bulter.common.dto.PornVideoParam;
 import com.lin.bulter.common.dto.common.PageParam;
 import com.lin.bulter.repository.mysql.entity.NineVideo;
-import com.lin.bulter.repository.mysql.entity.PornVideo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +19,7 @@ public class NineVideoController {
 
     /**
      * 新增
+     *
      * @return
      */
     @PostMapping("/save")
@@ -31,6 +30,7 @@ public class NineVideoController {
 
     /**
      * 修改
+     *
      * @return
      */
     @PostMapping("/update")
@@ -41,6 +41,7 @@ public class NineVideoController {
 
     /**
      * 删除
+     *
      * @return
      */
     @PostMapping("/delete/{nineVideoId}")
@@ -51,6 +52,7 @@ public class NineVideoController {
 
     /**
      * 按主键查询
+     *
      * @return
      */
     @GetMapping("/getNineVideoById/{nineVideoId}")
@@ -61,6 +63,7 @@ public class NineVideoController {
 
     /**
      * 查询所有
+     *
      * @return
      */
     @GetMapping("/getAllNineVideos")
@@ -71,6 +74,7 @@ public class NineVideoController {
 
     /**
      * 分页查询
+     *
      * @param param
      * @return
      */

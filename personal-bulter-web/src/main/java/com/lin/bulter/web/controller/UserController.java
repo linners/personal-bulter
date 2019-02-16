@@ -18,6 +18,7 @@ public class UserController {
 
     /**
      * 新增
+     *
      * @return
      */
     @PostMapping("/save")
@@ -28,6 +29,7 @@ public class UserController {
 
     /**
      * 修改
+     *
      * @return
      */
     @PostMapping("/update")
@@ -38,6 +40,7 @@ public class UserController {
 
     /**
      * 删除
+     *
      * @return
      */
     @PostMapping("/delete/{userId}")
@@ -48,6 +51,7 @@ public class UserController {
 
     /**
      * 按主键查询
+     *
      * @return
      */
     @GetMapping("/getUserById/{userId}")
@@ -58,6 +62,7 @@ public class UserController {
 
     /**
      * 查询所有
+     *
      * @return
      */
     @GetMapping("/getAllUsers")
@@ -68,6 +73,7 @@ public class UserController {
 
     /**
      * 分页查询
+     *
      * @param param
      * @return
      */

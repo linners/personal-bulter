@@ -18,6 +18,7 @@ public class RoleController {
 
     /**
      * 新增
+     *
      * @return
      */
     @PostMapping("/save")
@@ -28,6 +29,7 @@ public class RoleController {
 
     /**
      * 修改
+     *
      * @return
      */
     @PostMapping("/update")
@@ -38,6 +40,7 @@ public class RoleController {
 
     /**
      * 删除
+     *
      * @return
      */
     @PostMapping("/delete/{roleId}")
@@ -48,6 +51,7 @@ public class RoleController {
 
     /**
      * 按主键查询
+     *
      * @return
      */
     @GetMapping("/getRoleById/{roleId}")
@@ -58,6 +62,7 @@ public class RoleController {
 
     /**
      * 查询所有
+     *
      * @return
      */
     @GetMapping("/getAllRoles")
@@ -68,6 +73,7 @@ public class RoleController {
 
     /**
      * 分页查询
+     *
      * @param param
      * @return
      */
