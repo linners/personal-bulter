@@ -30,6 +30,9 @@ import java.util.Map;
 @Configuration
 public class ShiroConfig {
 
+    /**
+     * 注册shiro的Filter，拦截请求
+     */
     @Bean
     public FilterRegistrationBean<Filter> filterRegistrationBean(SecurityManager securityManager, UserService userService) throws Exception {
         FilterRegistrationBean<Filter> filterRegistration = new FilterRegistrationBean<Filter>();
@@ -42,6 +45,9 @@ public class ShiroConfig {
         return filterRegistration;
     }
 
+    /**
+     * 初始化Authenticator
+     */
     @Bean
     public Authenticator authenticator(UserService userService) {
         ModularRealmAuthenticator authenticator = new ModularRealmAuthenticator();
@@ -50,6 +56,10 @@ public class ShiroConfig {
         return authenticator;
     }
 
+    /**
+     * 禁用session, 不保存用户登录状态。保证每次请求都重新认证。
+     * 需要注意的是，如果用户代码里调用Subject.getSession()还是可以用session，如果要完全禁用，要配合下面的noSessionCreation的Filter来实现
+     */
     @Bean
     protected SessionStorageEvaluator sessionStorageEvaluator() {
         DefaultWebSessionStorageEvaluator sessionStorageEvaluator = new DefaultWebSessionStorageEvaluator();
@@ -57,12 +67,18 @@ public class ShiroConfig {
         return sessionStorageEvaluator;
     }
 
+    /**
+     * 用于用户名密码登录时认证的realm
+     */
     @Bean("dbRealm")
     public Realm dbShiroRealm(UserService userService) {
         DbShiroRealm myShiroRealm = new DbShiroRealm(userService);
         return myShiroRealm;
     }
 
+    /**
+     * 用于JWT token认证的realm
+     */
     @Bean("jwtRealm")
     public Realm jwtShiroRealm(UserService userService) {
         JWTShiroRealm myShiroRealm = new JWTShiroRealm(userService);
@@ -70,7 +86,7 @@ public class ShiroConfig {
     }
 
     /**
-     * 设置过滤器
+     * 设置过滤器,将自定义的Filter加入
      */
     @Bean("shiroFilter")
     public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager, UserService userService) {
@@ -98,10 +114,12 @@ public class ShiroConfig {
         return chainDefinition;
     }
 
+    // 注意不要加@Bean注解，不然spring会自动注册成filter
     protected JwtAuthFilter createAuthFilter(UserService userService) {
         return new JwtAuthFilter(userService);
     }
 
+    //注意不要加@Bean注解，不然spring会自动注册成filter
     protected AnyRolesAuthorizationFilter createRolesFilter() {
         return new AnyRolesAuthorizationFilter();
     }

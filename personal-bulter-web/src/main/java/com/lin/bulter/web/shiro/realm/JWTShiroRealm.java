@@ -28,9 +28,13 @@ public class JWTShiroRealm extends AuthorizingRealm {
 
     public JWTShiroRealm(UserService userService) {
         this.userService = userService;
+        //这里使用我们自定义的Matcher
         this.setCredentialsMatcher(new JWTCredentialsMatcher());
     }
 
+    /**
+     * 限定这个Realm只支持我们自定义的JWT Token
+     */
     @Override
     public boolean supports(AuthenticationToken token) {
         return token instanceof JWTToken;
@@ -39,6 +43,7 @@ public class JWTShiroRealm extends AuthorizingRealm {
     /**
      * 认证信息.(身份验证) : Authentication 是用来验证用户身份
      * 默认使用此方法进行用户名正确与否验证，错误抛出异常即可。
+     * 更controller登录一样，也是获取用户的salt值，给到shiro，由shiro来调用matcher来做认证
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
