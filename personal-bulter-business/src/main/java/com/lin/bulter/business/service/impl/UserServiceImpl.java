@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
         UserDto user = new UserDto();
         user.setUserId(1L);
         user.setUsername("admin");
-        user.setPassword("123456");
+        user.setPassword("6d8089335b1d6a9e157f682adfba778656fc87eb677aa3b8c0db90c79f6d7362");
         user.setEncryptPwd(new Sha256Hash("123456", encryptSalt).toHex());
         return user;
     }
