@@ -10,11 +10,12 @@
         <result column="id" property="id"/>
         <result column="user_name" property="userName"/>
         <result column="pass_word" property="passWord"/>
-        
+        <result column="encrypt_pwd" property="encryptPwd"/>
+
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, user_name, pass_word 
+        id, user_name, pass_word, encrypt_pwd
     </sql>
 
     <!-- 新增 -->
@@ -23,9 +24,9 @@
           WARNING - @generated
         -->
         insert into t_user (
-          id, user_name, pass_word  )
+          id, user_name, pass_word, encrypt_pwd )
         values (
-          #{id}, #{userName}, #{passWord}  )
+          #{id}, #{userName}, #{passWord}, #{encryptPwd} )
     </insert>
 
     <!-- 按条件修改 -->
@@ -41,7 +42,9 @@
           <if test="passWord != null">
             pass_word = #{passWord}
           </if>
-          
+          <if test="encryptPwd != null">
+            encrypt_pwd = #{encryptPwd}
+          </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
@@ -60,7 +63,7 @@
         <!--
           WARNING - @generated
         -->
-        select 
+        select
           <include refid="Base_Column_List" />
         from t_user
         where id = #{id,jdbcType=INTEGER}
@@ -71,7 +74,7 @@
         <!--
           WARNING - @generated
         -->
-        select 
+        select
           <include refid="Base_Column_List" />
         from t_user
     </select>

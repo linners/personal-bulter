@@ -18,7 +18,18 @@
         <if test="param.passWord != null">
             pass_word = #{param.passWord}
         </if>
-        
+
       </where>
+    </select>
+
+    <!-- 通过用户名查询用户信息 -->
+    <select id="getUserByName" resultMap="BaseResultMap">
+        select
+          <include refid="Base_Column_List"/>
+        from
+          t_user
+        <where>
+            user_name = #{userName}
+        </where>
     </select>
 </mapper>

@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface UserMapper {
-    
+
     /**
      *  按主键删除
      */
@@ -39,4 +39,11 @@ public interface UserMapper {
      *  按条件分页查询
      */
     List<User> selectByCondition(@Param("param") UserParam userParam);
+
+    /**
+     * 通过用户名查询用户信息
+     * @param userName
+     * @return
+     */
+    User getUserByName(String userName);
 }

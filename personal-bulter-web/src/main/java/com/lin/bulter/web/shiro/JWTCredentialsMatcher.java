@@ -30,7 +30,7 @@ public class JWTCredentialsMatcher implements CredentialsMatcher {
         try {
             Algorithm algorithm = Algorithm.HMAC256(salt);
             JWTVerifier verifier = JWT.require(algorithm)
-                    .withClaim("username", user.getUsername())
+                    .withClaim("username", user.getUserName())
                     .build();
             verifier.verify(token);
             return true;

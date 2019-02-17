@@ -15,6 +15,7 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 自定义身份认证
@@ -24,10 +25,10 @@ import org.slf4j.LoggerFactory;
 public class JWTShiroRealm extends AuthorizingRealm {
     private final Logger log = LoggerFactory.getLogger(JWTShiroRealm.class);
 
+    @Autowired
     protected UserService userService;
 
     public JWTShiroRealm(UserService userService) {
-        this.userService = userService;
         //这里使用我们自定义的Matcher
         this.setCredentialsMatcher(new JWTCredentialsMatcher());
     }

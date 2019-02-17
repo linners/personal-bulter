@@ -5,24 +5,31 @@ import com.github.pagehelper.PageInfo;
 import com.lin.bulter.business.service.UserService;
 import com.lin.bulter.common.dto.UserDto;
 import com.lin.bulter.common.dto.UserParam;
+import com.lin.bulter.common.utils.BeanUtil;
 import com.lin.bulter.common.utils.JwtUtils;
 import com.lin.bulter.repository.mysql.dao.UserMapper;
 import com.lin.bulter.repository.mysql.entity.User;
+import com.lin.bulter.repository.redis.RedisUtil;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private static final String encryptSalt = "F12839WhsnnEV$#23b";
+    @Value("${encryptSalt}")
+    private String encryptSalt;
 
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     @Transactional
@@ -61,14 +68,11 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 保存user登录信息，返回token
-     * @param userDto
+     * @param username
      */
     public String generateJwtToken(String username) {
-        String salt = "12345";//JwtUtils.generateSalt();
-        /**
-         * @todo 将salt保存到数据库或者缓存中
-         * redisTemplate.opsForValue().set("token:"+username, salt, 3600, TimeUnit.SECONDS);
-         */
+        String salt = JwtUtils.generateSalt();
+        redisUtil.set("token:" + username, salt, 3600L);
         return JwtUtils.sign(username, salt, 3600); //生成jwt token，设置过期时间为1小时
     }
 
@@ -78,11 +82,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public UserDto getJwtTokenInfo(String username) {
-        String salt = "12345";
-        /**
-         * @todo 从数据库或者缓存中取出jwt token生成时用的salt
-         * salt = redisTemplate.opsForValue().get("token:"+username);
-         */
+        String salt = redisUtil.get("token:" + username);
         UserDto user = getUserInfo(username);
         user.setSalt(salt);
         return user;
@@ -90,15 +90,10 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 清除token信息
-     * @param userName 登录用户名
-     * @param terminal 登录终端
+     * @param username 登录用户名
      */
     public void deleteLoginInfo(String username) {
-        /**
-         * @todo 删除数据库或者缓存中保存的salt
-         * redisTemplate.delete("token:"+username);
-         */
-
+        redisUtil.remove("token:"+username);
     }
 
     /**
@@ -107,12 +102,19 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public UserDto getUserInfo(String userName) {
-        UserDto user = new UserDto();
-        user.setUserId(1L);
-        user.setUsername("admin");
-        user.setPassword("6d8089335b1d6a9e157f682adfba778656fc87eb677aa3b8c0db90c79f6d7362");
-        user.setEncryptPwd(new Sha256Hash("123456", encryptSalt).toHex());
-        return user;
+        User user = userMapper.getUserByName(userName);
+        UserDto userDto = BeanUtil.copy(user, UserDto::new);
+        userDto.setUserId(user.getId());
+        userDto.setSalt(encryptSalt);
+        //userDto.setEncryptPwd(new Sha256Hash("123456", encryptSalt).toHex());
+        return userDto;
+    }
+
+    public static void main(String[] args) {
+        String encryptSalt = "F12839WhsnnEV$#23b";
+        String sha256Hash = new Sha256Hash("123456", encryptSalt).toHex();
+        System.out.println(sha256Hash);
+
     }
 
     /**
@@ -120,7 +122,7 @@ public class UserServiceImpl implements UserService {
      * @param userId
      * @return
      */
-    public List<String> getUserRoles(Long userId){
+    public List<String> getUserRoles(Integer userId){
         return Arrays.asList("admin");
     }
 }

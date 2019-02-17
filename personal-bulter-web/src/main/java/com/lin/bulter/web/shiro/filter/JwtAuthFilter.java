@@ -20,6 +20,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -74,6 +75,18 @@ public class JwtAuthFilter extends AuthenticatingFilter {
     }
 
     /**
+     * 将非法请求跳转到 /401
+     */
+    private void response401(ServletRequest req, ServletResponse resp) {
+        try {
+            HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
+            httpServletResponse.sendRedirect("/401");
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    /**
      * 这里重写了父类的方法，使用我们自己定义的Token类，提交给shiro。这个方法返回null的话会直接抛出异常，进入isAccessAllowed（）的异常处理逻辑。
      */
     @Override
@@ -95,6 +108,7 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         httpResponse.setContentType("application/json;charset=UTF-8");
         httpResponse.setStatus(HttpStatus.SC_NON_AUTHORITATIVE_INFORMATION);
         fillCorsHeader(WebUtils.toHttp(servletRequest), httpResponse);
+        response401(servletRequest, servletResponse);
         return false;
     }
 
@@ -110,7 +124,7 @@ public class JwtAuthFilter extends AuthenticatingFilter {
             UserDto user = (UserDto) subject.getPrincipal();
             boolean shouldRefresh = shouldTokenRefresh(JwtUtils.getIssuedAt(jwtToken.getToken()));
             if (shouldRefresh) {
-                newToken = userService.generateJwtToken(user.getUsername());
+                newToken = userService.generateJwtToken(user.getUserName());
             }
         }
         if (StringUtils.isNotBlank(newToken))

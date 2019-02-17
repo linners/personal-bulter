@@ -8,6 +8,8 @@ spring:
 server:
   port: 8082
 
+encryptSalt: F12839WhsnnEV$#23b
+
 generate:
   oldGitTemplateBasePath: e:/github-template
   newProjectCodeBasePath: e:/workspace-tmp

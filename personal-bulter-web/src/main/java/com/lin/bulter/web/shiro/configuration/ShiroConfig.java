@@ -90,8 +90,11 @@ public class ShiroConfig {
      */
     @Bean("shiroFilter")
     public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager, UserService userService) {
+        // 必须设置 SecurityManager
         ShiroFilterFactoryBean factoryBean = new ShiroFilterFactoryBean();
         factoryBean.setSecurityManager(securityManager);
+        // setLoginUrl 如果不设置值，默认会自动寻找Web工程根目录下的"/login.jsp"页面 或 "/login" 映射
+        // 设置拦截器
         Map<String, Filter> filterMap = factoryBean.getFilters();
         filterMap.put("authcToken", createAuthFilter(userService));
         filterMap.put("anyRole", createRolesFilter());
@@ -104,11 +107,11 @@ public class ShiroConfig {
     @Bean
     protected ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
+        chainDefinition.addPathDefinition("/401", "anon");
         chainDefinition.addPathDefinition("/login", "noSessionCreation,anon");
         chainDefinition.addPathDefinition("/logout", "noSessionCreation,authcToken[permissive]");
         chainDefinition.addPathDefinition("/image/**", "anon");
         chainDefinition.addPathDefinition("/admin/**", "noSessionCreation,authcToken,anyRole[admin,manager]"); //只允许admin或manager角色的用户访问
-        chainDefinition.addPathDefinition("/article/list", "noSessionCreation,authcToken");
         chainDefinition.addPathDefinition("/article/*", "noSessionCreation,authcToken[permissive]");
         chainDefinition.addPathDefinition("/**", "noSessionCreation,authcToken");
         return chainDefinition;

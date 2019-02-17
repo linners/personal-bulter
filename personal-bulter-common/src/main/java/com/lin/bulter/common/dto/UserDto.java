@@ -12,10 +12,10 @@ import java.util.List;
 @NoArgsConstructor
 public class UserDto implements Serializable {
 
-    private String username;
-    private String password;
+    private String userName;
+    private String passWord;
     private String encryptPwd;
-    private Long userId;
+    private Integer userId;
     private String salt;
     private List<String> roles;
 
