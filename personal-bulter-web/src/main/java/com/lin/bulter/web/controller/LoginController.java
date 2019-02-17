@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.lin.bulter.business.service.UserService;
 import com.lin.bulter.common.dto.UserDto;
 import com.lin.bulter.common.utils.WebResultUtil;
-import com.lin.bulter.repository.redis.RedisUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -14,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -66,10 +64,8 @@ public class LoginController {
             // 如果校验失败，shiro会抛出异常，返回客户端失败
             logger.error("User {} login fail, Reason:{}", loginInfo.getUserName(), e.getMessage());
             return WebResultUtil.renderSuccess(HttpStatus.UNAUTHORIZED.value(), "用户名密码错误");
-            //return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
             return WebResultUtil.renderSuccess(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统出错");
-            //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

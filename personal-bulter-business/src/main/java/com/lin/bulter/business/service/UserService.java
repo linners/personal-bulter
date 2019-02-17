@@ -5,7 +5,6 @@ import com.lin.bulter.common.dto.UserDto;
 import com.lin.bulter.common.dto.UserParam;
 import com.lin.bulter.repository.mysql.entity.User;
 
-import java.util.Arrays;
 import java.util.List;
 
 public interface UserService {
