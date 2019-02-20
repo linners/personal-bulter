@@ -8,6 +8,7 @@ import com.lin.bulter.common.utils.WebResultUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,19 +27,9 @@ public class LoginController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(value = "/401", method = RequestMethod.GET)
-    public JSONObject handle401() {
-        return WebResultUtil.renderSuccess(HttpStatus.OK.value(), "token错误");
-    }
-
-    @RequestMapping(value = "/notLogin", method = RequestMethod.GET)
-    public JSONObject notLogin() {
-        return WebResultUtil.renderSuccess(HttpStatus.OK.value(), "您尚未登陆");
-    }
-
-    @RequestMapping(value = "/notRole", method = RequestMethod.GET)
-    public JSONObject notRole() {
-        return WebResultUtil.renderSuccess(HttpStatus.OK.value(), "您没有权限");
+    @RequestMapping(value = "/unauthorized")
+    public JSONObject unauthorized() {
+        return WebResultUtil.render(HttpStatus.UNAUTHORIZED.value(), "token错误", null);
     }
 
     /**
@@ -58,14 +49,13 @@ public class LoginController {
             UserDto user = (UserDto) subject.getPrincipal();
             String newToken = userService.generateJwtToken(user.getUserName());
             response.setHeader("x-auth-token", newToken);
-            return WebResultUtil.renderSuccess(HttpStatus.OK.value(), "success");
-            //return ResponseEntity.status(HttpStatus.OK).build();
+            return WebResultUtil.render(HttpStatus.OK.value(), "success", null);
         } catch (AuthenticationException e) {
             // 如果校验失败，shiro会抛出异常，返回客户端失败
             logger.error("User {} login fail, Reason:{}", loginInfo.getUserName(), e.getMessage());
-            return WebResultUtil.renderSuccess(HttpStatus.UNAUTHORIZED.value(), "用户名密码错误");
+            return WebResultUtil.render(HttpStatus.UNAUTHORIZED.value(), "用户名密码错误", null);
         } catch (Exception e) {
-            return WebResultUtil.renderSuccess(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统出错");
+            return WebResultUtil.render(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统出错", null);
         }
     }
 
@@ -74,6 +64,7 @@ public class LoginController {
      *
      * @return
      */
+    @RequiresRoles("admin")
     @GetMapping(value = "/logout")
     public JSONObject logout() {
         Subject subject = SecurityUtils.getSubject();
@@ -82,7 +73,7 @@ public class LoginController {
             userService.deleteLoginInfo(user.getUserName());
         }
         SecurityUtils.getSubject().logout();
-        return WebResultUtil.renderSuccess(HttpStatus.OK.value(), "退出登录成功");
+        return WebResultUtil.render(HttpStatus.OK.value(), "退出登录成功", null);
     }
 
 }

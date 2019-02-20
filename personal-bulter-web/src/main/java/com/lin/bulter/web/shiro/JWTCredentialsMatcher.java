@@ -3,7 +3,6 @@ package com.lin.bulter.web.shiro;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.lin.bulter.common.dto.UserDto;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -27,18 +26,17 @@ public class JWTCredentialsMatcher implements CredentialsMatcher {
         String salt = stored.toString();
 
         UserDto user = (UserDto) authenticationInfo.getPrincipals().getPrimaryPrincipal();
+        Algorithm algorithm = null;
         try {
-            Algorithm algorithm = Algorithm.HMAC256(salt);
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .withClaim("username", user.getUserName())
-                    .build();
-            verifier.verify(token);
-            return true;
-        } catch (UnsupportedEncodingException | JWTVerificationException e) {
-            log.error("Token Error:{}", e.getMessage());
+            algorithm = Algorithm.HMAC256(salt);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
-
-        return false;
+        JWTVerifier verifier = JWT.require(algorithm)
+                .withClaim("username", user.getUserName())
+                .build();
+        verifier.verify(token);
+        return true;
     }
 
 }

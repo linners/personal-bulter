@@ -28,7 +28,7 @@ public class JWTShiroRealm extends AuthorizingRealm {
     @Autowired
     protected UserService userService;
 
-    public JWTShiroRealm(UserService userService) {
+    public JWTShiroRealm() {
         //这里使用我们自定义的Matcher
         this.setCredentialsMatcher(new JWTCredentialsMatcher());
     }
@@ -50,11 +50,8 @@ public class JWTShiroRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
         JWTToken jwtToken = (JWTToken) authcToken;
         String token = jwtToken.getToken();
-
-        UserDto user = userService.getJwtTokenInfo(JwtUtils.getUsername(token));
-        if (user == null)
-            throw new AuthenticationException("token过期，请重新登录");
-
+        String username = JwtUtils.getUsername(token);
+        UserDto user = userService.getJwtTokenInfo(username);
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(user, user.getSalt(), "jwtRealm");
 
         return authenticationInfo;

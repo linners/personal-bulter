@@ -4,6 +4,12 @@ import com.github.pagehelper.PageInfo;
 import com.lin.bulter.business.service.RoleService;
 import com.lin.bulter.common.dto.RoleParam;
 import com.lin.bulter.repository.mysql.entity.Role;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,8 +71,12 @@ public class RoleController {
      *
      * @return
      */
+    //@RequiresPermissions(logical = Logical.OR, value = {"roleList", "test"})
+    @RequiresRoles("admin")
     @GetMapping("/getAllRoles")
     public List<Role> getAllRoles() {
+        Subject subject = SecurityUtils.getSubject();
+        PrincipalCollection principals = subject.getPrincipals();
         List<Role> result = roleService.selectAllRoles();
         return result;
     }

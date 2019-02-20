@@ -15,22 +15,24 @@ import javax.servlet.http.HttpServletRequest;
 public class ExceptionController {
 
 	// 捕捉shiro的异常
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	@ExceptionHandler(ShiroException.class)
 	public JSONObject handle401(ShiroException e) {
-		return WebResultUtil.renderSuccess(401, e.getMessage().toString());
+		return WebResultUtil.render(401, e.getMessage(), null);
 	}
 
 	// 捕捉UnauthorizedException
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	@ExceptionHandler(UnauthorizedException.class)
-	public JSONObject handle401(UnauthorizedException e) {
-		return WebResultUtil.renderSuccess(401, "Unauthorized");
+	public JSONObject handle401() {
+		return WebResultUtil.render(401, "Unauthorized", null);
 	}
 
 	// 捕捉其他所有异常
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public JSONObject globalException(HttpServletRequest request, Throwable ex) {
-		return WebResultUtil.renderSuccess(getStatus(request).value(), ex.getMessage());
+		return WebResultUtil.render(getStatus(request).value(), ex.getMessage(), null);
 	}
 
 	private HttpStatus getStatus(HttpServletRequest request) {

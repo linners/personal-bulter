@@ -1,8 +1,10 @@
 package com.lin.bulter.common.utils;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 
@@ -56,6 +58,28 @@ public class JwtUtils {
                     .sign(algorithm);
         } catch (UnsupportedEncodingException e) {
             return null;
+        }
+    }
+
+    /**
+     * 校验 token 是否正确
+     *
+     * @param token    密钥
+     * @param username 用户名
+     * @return 是否正确
+     */
+    public static boolean verify(String token, String username, String slat) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(slat);
+            //在token中附带了username信息
+            JWTVerifier verifier = JWT.require(algorithm)
+                .withClaim("username", username)
+                .build();
+            //验证 token
+            verifier.verify(token);
+            return true;
+        } catch (Exception exception) {
+            return false;
         }
     }
 

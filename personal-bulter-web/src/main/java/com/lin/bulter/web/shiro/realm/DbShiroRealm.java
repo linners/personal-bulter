@@ -22,7 +22,7 @@ public class DbShiroRealm extends AuthorizingRealm {
     @Autowired
     private UserService userService;
 
-    public DbShiroRealm(UserService userService) {
+    public DbShiroRealm() {
         //因为数据库中的密码做了散列，所以使用shiro的散列Matcher
         this.setCredentialsMatcher(new HashedCredentialsMatcher(Sha256Hash.ALGORITHM_NAME));
     }

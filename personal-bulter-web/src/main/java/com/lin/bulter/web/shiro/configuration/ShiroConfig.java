@@ -1,7 +1,6 @@
 package com.lin.bulter.web.shiro.configuration;
 
 import com.lin.bulter.business.service.UserService;
-import com.lin.bulter.web.shiro.filter.AnyRolesAuthorizationFilter;
 import com.lin.bulter.web.shiro.filter.JwtAuthFilter;
 import com.lin.bulter.web.shiro.realm.DbShiroRealm;
 import com.lin.bulter.web.shiro.realm.JWTShiroRealm;
@@ -11,13 +10,16 @@ import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SessionStorageEvaluator;
 import org.apache.shiro.realm.Realm;
+import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
 import org.apache.shiro.web.mgt.DefaultWebSessionStorageEvaluator;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
@@ -36,7 +38,7 @@ public class ShiroConfig {
     @Bean
     public FilterRegistrationBean<Filter> filterRegistrationBean(SecurityManager securityManager, UserService userService) throws Exception {
         FilterRegistrationBean<Filter> filterRegistration = new FilterRegistrationBean<Filter>();
-        filterRegistration.setFilter((Filter) shiroFilter(securityManager, userService).getObject());
+        filterRegistration.setFilter((Filter) shiroFilter(securityManager).getObject());
         filterRegistration.addInitParameter("targetFilterLifecycle", "true");
         filterRegistration.setAsyncSupported(true);
         filterRegistration.setEnabled(true);
@@ -51,7 +53,7 @@ public class ShiroConfig {
     @Bean
     public Authenticator authenticator(UserService userService) {
         ModularRealmAuthenticator authenticator = new ModularRealmAuthenticator();
-        authenticator.setRealms(Arrays.asList(jwtShiroRealm(userService), dbShiroRealm(userService)));
+        authenticator.setRealms(Arrays.asList(jwtShiroRealm(), dbShiroRealm()));
         authenticator.setAuthenticationStrategy(new FirstSuccessfulStrategy());
         return authenticator;
     }
@@ -67,12 +69,13 @@ public class ShiroConfig {
         return sessionStorageEvaluator;
     }
 
+
     /**
      * 用于用户名密码登录时认证的realm
      */
     @Bean("dbRealm")
-    public Realm dbShiroRealm(UserService userService) {
-        DbShiroRealm myShiroRealm = new DbShiroRealm(userService);
+    public Realm dbShiroRealm() {
+        DbShiroRealm myShiroRealm = new DbShiroRealm();
         return myShiroRealm;
     }
 
@@ -80,8 +83,8 @@ public class ShiroConfig {
      * 用于JWT token认证的realm
      */
     @Bean("jwtRealm")
-    public Realm jwtShiroRealm(UserService userService) {
-        JWTShiroRealm myShiroRealm = new JWTShiroRealm(userService);
+    public Realm jwtShiroRealm() {
+        JWTShiroRealm myShiroRealm = new JWTShiroRealm();
         return myShiroRealm;
     }
 
@@ -89,42 +92,53 @@ public class ShiroConfig {
      * 设置过滤器,将自定义的Filter加入
      */
     @Bean("shiroFilter")
-    public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager, UserService userService) {
+    public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
         // 必须设置 SecurityManager
         ShiroFilterFactoryBean factoryBean = new ShiroFilterFactoryBean();
         factoryBean.setSecurityManager(securityManager);
         // setLoginUrl 如果不设置值，默认会自动寻找Web工程根目录下的"/login.jsp"页面 或 "/login" 映射
         // 设置拦截器
         Map<String, Filter> filterMap = factoryBean.getFilters();
-        filterMap.put("authcToken", createAuthFilter(userService));
-        filterMap.put("anyRole", createRolesFilter());
+        filterMap.put("jwt", new JwtAuthFilter());
         factoryBean.setFilters(filterMap);
         factoryBean.setFilterChainDefinitionMap(shiroFilterChainDefinition().getFilterChainMap());
 
         return factoryBean;
     }
 
+    /**
+     * 下面的代码是添加注解支持
+     */
     @Bean
-    protected ShiroFilterChainDefinition shiroFilterChainDefinition() {
-        DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
-        chainDefinition.addPathDefinition("/401", "anon");
-        chainDefinition.addPathDefinition("/login", "noSessionCreation,anon");
-        chainDefinition.addPathDefinition("/logout", "noSessionCreation,authcToken[permissive]");
-        chainDefinition.addPathDefinition("/image/**", "anon");
-        chainDefinition.addPathDefinition("/admin/**", "noSessionCreation,authcToken,anyRole[admin,manager]"); //只允许admin或manager角色的用户访问
-        chainDefinition.addPathDefinition("/article/*", "noSessionCreation,authcToken[permissive]");
-        chainDefinition.addPathDefinition("/**", "noSessionCreation,authcToken");
-        return chainDefinition;
+    @DependsOn("lifecycleBeanPostProcessor")
+    public static DefaultAdvisorAutoProxyCreator getDefaultAdvisorAutoProxyCreator() {
+        DefaultAdvisorAutoProxyCreator creator = new DefaultAdvisorAutoProxyCreator();
+        /**
+         * setUsePrefix(false)用于解决一个奇怪的bug。在引入spring aop的情况下。
+         * 在@Controller注解的类的方法中加入@RequiresRole注解，会导致该方法无法映射请求，导致返回404。
+         * 加入这项配置能解决这个bug
+         */
+        creator.setUsePrefix(false);
+        creator.setProxyTargetClass(true);
+        return creator;
     }
 
-    // 注意不要加@Bean注解，不然spring会自动注册成filter
-    protected JwtAuthFilter createAuthFilter(UserService userService) {
-        return new JwtAuthFilter(userService);
+    @Bean
+    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+        return new LifecycleBeanPostProcessor();
     }
 
-    //注意不要加@Bean注解，不然spring会自动注册成filter
-    protected AnyRolesAuthorizationFilter createRolesFilter() {
-        return new AnyRolesAuthorizationFilter();
+    @Bean
+    public ShiroFilterChainDefinition shiroFilterChainDefinition() {
+        DefaultShiroFilterChainDefinition chain = new DefaultShiroFilterChainDefinition();
+        chain.addPathDefinition("/unauthorized", "noSessionCreation, anon");
+        chain.addPathDefinition("/login", "noSessionCreation, anon");
+        chain.addPathDefinition("/**", "jwt"); // all paths are managed via annotations
+
+        // 这另一种配置方式。但是还是用上面那种吧，容易理解一点。
+        // or allow basic authentication, but NOT require it.
+        // chainDefinition.addPathDefinition("/**", "authcBasic[permissive]");
+        return chain;
     }
 
 }

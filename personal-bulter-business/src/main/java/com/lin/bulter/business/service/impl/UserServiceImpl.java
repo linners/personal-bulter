@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Integer insertUser(User user) {
+        user.setEncryptPwd(new Sha256Hash(user.getPassWord(), encryptSalt).toHex());
         return userMapper.insert(user);
     }
 
@@ -82,7 +83,8 @@ public class UserServiceImpl implements UserService {
      */
     public UserDto getJwtTokenInfo(String username) {
         String salt = redisUtil.get("token:" + username);
-        UserDto user = getUserInfo(username);
+        UserDto user = new UserDto();
+        user.setUserName(username);
         user.setSalt(salt);
         return user;
     }
@@ -108,13 +110,13 @@ public class UserServiceImpl implements UserService {
         //userDto.setEncryptPwd(new Sha256Hash("123456", encryptSalt).toHex());
         return userDto;
     }
-
-    public static void main(String[] args) {
-        String encryptSalt = "F12839WhsnnEV$#23b";
-        String sha256Hash = new Sha256Hash("123456", encryptSalt).toHex();
-        System.out.println(sha256Hash);
-
-    }
+    //
+    //public static void main(String[] args) {
+    //    String encryptSalt = "F12839WhsnnEV$#23b";
+    //    String sha256Hash = new Sha256Hash("123456", encryptSalt).toHex();
+    //    System.out.println(sha256Hash);
+    //
+    //}
 
     /**
      * 获取用户角色列表，强烈建议从缓存中获取
