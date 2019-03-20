@@ -4,6 +4,7 @@ package com.lin.bulter.web.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.lin.bulter.business.service.UserService;
 import com.lin.bulter.common.dto.UserDto;
+import com.lin.bulter.common.utils.HttpClientPool;
 import com.lin.bulter.common.utils.WebResultUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 @RestController
 public class LoginController {
@@ -30,6 +32,17 @@ public class LoginController {
     @RequestMapping(value = "/unauthorized")
     public JSONObject unauthorized() {
         return WebResultUtil.render(HttpStatus.UNAUTHORIZED.value(), "token错误", null);
+    }
+
+    @GetMapping("/noLogin/{code}")
+    public JSONObject noLogin(@PathVariable("code") String code){
+        String appid = "wxa3c6da3c2cf43617";
+        String appsecret = "dd3eb4be234c218bbbe5e3df471faf4e";
+        String granttype = "authorization_code";
+        String url = "https://api.weixin.qq.com/sns/jscode2session?"+"appid="+appid+"&secret="+appsecret+"&js_code="+code+"&grant_type"+granttype;
+        String result = HttpClientPool.sendGet(url);
+        System.out.println(result);
+        return WebResultUtil.render(HttpStatus.OK.value(), "success", result);
     }
 
     /**

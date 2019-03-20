@@ -133,6 +133,7 @@ public class ShiroConfig {
         DefaultShiroFilterChainDefinition chain = new DefaultShiroFilterChainDefinition();
         chain.addPathDefinition("/unauthorized", "noSessionCreation, anon");
         chain.addPathDefinition("/login", "noSessionCreation, anon");
+        chain.addPathDefinition("/noLogin", "noSessionCreation, anon");
         chain.addPathDefinition("/**", "jwt"); // all paths are managed via annotations
 
         // 这另一种配置方式。但是还是用上面那种吧，容易理解一点。
