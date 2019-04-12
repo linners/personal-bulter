@@ -3,6 +3,8 @@ package com.lin.bulter.common.utils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.transport.CredentialsProvider;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,18 +15,19 @@ public class JGitUtils {
 
     public static void cloneGitTemplate(String gitRepository, String gitBasePath, String branchName) {
         File gitFile = new File(gitBasePath);
+        CredentialsProvider credentialsProvider = new UsernamePasswordCredentialsProvider("chenglin198637@126.com", "lin8637aa");
         try {
             if (gitFile.exists() && gitFile.listFiles()!=null && gitFile.listFiles().length>0) {
                 git = Git.open(gitFile);
             } else {
-                git = Git.cloneRepository().setURI(gitRepository).setDirectory(gitFile).call();
+                git = Git.cloneRepository().setCredentialsProvider(credentialsProvider).setURI(gitRepository).setDirectory(gitFile).call();
             }
             ListBranchCommand listBranchCommand = git.branchList();
             String branch = listBranchCommand.getRepository().getBranch();
             if (branchName!=null && !"master".equals(branchName) && branch != null && !branch.equals(branchName)) {
                 git.checkout().setCreateBranch(true).setName(branchName).call();
             }
-            git.pull().call();
+            git.pull().setRemote("origin").setCredentialsProvider(credentialsProvider).call();
         } catch (GitAPIException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -78,6 +81,6 @@ public class JGitUtils {
     }
 
     public static void main(String[] args) {
-        JGitUtils.cloneGitTemplate("https://github.com/linners/springboot-template.git","d:/tmp3", "master");
+        JGitUtils.cloneGitTemplate("https://github.com/linners/springboot-multi-template-web-dubbo.git","d:/tmp3", "master");
     }
 }

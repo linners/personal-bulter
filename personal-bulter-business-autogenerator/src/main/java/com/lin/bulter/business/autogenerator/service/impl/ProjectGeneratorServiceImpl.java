@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -163,22 +164,32 @@ public class ProjectGeneratorServiceImpl {
                 } else if (tempFile.isFile()) {    // 文件
                     String oldFilePath = tempFile.getAbsolutePath();
                     String newFilePath = getNewFilePath(generateParamExtend, oldFilePath, false);
-                    String newContent = velocityInstance.compileVelocityFile(getGitProjectPath(generateParamExtend.getGitProjectPath(), oldFilePath), velocityContext);
-                    try {
-                        String[] arr = newFilePath.split("/");
-                        String[] newArr = Arrays.copyOf(arr, arr.length - 1);
-                        StringBuilder sb = new StringBuilder();
-                        for(String a : newArr){
-                            sb.append(a);
-                            sb.append("/");
+                    // 老文件地址，去除git根目录
+                    String oldFileRelativePath = getGitProjectPath(generateParamExtend.getGitProjectPath(), oldFilePath);
+                    String[] arr = newFilePath.split("/");
+                    String[] newArr = Arrays.copyOf(arr, arr.length - 1);
+                    StringBuilder sb = new StringBuilder();
+                    for(String a : newArr){
+                        sb.append(a);
+                        sb.append("/");
+                    }
+                    File tmpFile = new File(sb.toString());
+                    if (!tmpFile.exists()) {
+                        tmpFile.mkdirs();
+                    }
+                    if(oldFilePath!=null && !oldFilePath.endsWith(".vue")){
+                        String newContent = velocityInstance.compileVelocityFile(oldFileRelativePath, velocityContext);
+                        try {
+                            Files.write(newContent.getBytes(), new File(newFilePath));
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-                        File tmpFile = new File(sb.toString());
-                        if (!tmpFile.exists()) {
-                            tmpFile.mkdirs();
+                    }else {
+                        try {
+                            Files.copy(new File(oldFilePath), new File(newFilePath));
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-                        Files.write(newContent.getBytes(), new File(newFilePath));
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
                 }
             }

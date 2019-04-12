@@ -62,8 +62,8 @@ public class VelocityUtils {
 //        context.put("test2", "3456");
 //        VelocityUtils instance = VelocityUtils.getInstance("e:/github-template");
 //        String str1 = instance.compileVelocityString("${test}/a/b/${test2}", context);
-        VelocityUtils instance2 = VelocityUtils.getInstance("e:/github-template2");
-        String str2 = instance2.compileVelocityFile("/controller/${entityNameUp}Controller.java", context);
+        VelocityUtils instance2 = VelocityUtils.getInstance("D:/download");
+        String str2 = instance2.compileVelocityFile("App.vue", context);
         System.out.println(str2);
     }
 }
