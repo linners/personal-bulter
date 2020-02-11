@@ -15,19 +15,22 @@ public class JGitUtils {
 
     public static void cloneGitTemplate(String gitRepository, String gitBasePath, String branchName) {
         File gitFile = new File(gitBasePath);
-        CredentialsProvider credentialsProvider = new UsernamePasswordCredentialsProvider("chenglin198637@126.com", "lin8637aa");
         try {
-            if (gitFile.exists() && gitFile.listFiles()!=null && gitFile.listFiles().length>0) {
-                git = Git.open(gitFile);
-            } else {
+//            if (gitFile.exists() && gitFile.listFiles()!=null && gitFile.listFiles().length>0) {
+//                git = Git.open(gitFile);
+//            } else {
+//                git = Git.cloneRepository().setCredentialsProvider(credentialsProvider).setURI(gitRepository).setDirectory(gitFile).call();
+//            }
+            if(!gitFile.exists() || gitFile.listFiles()==null || gitFile.listFiles().length==0){
+                CredentialsProvider credentialsProvider = new UsernamePasswordCredentialsProvider("chenglin198637@126.com", "lin8637aa");
                 git = Git.cloneRepository().setCredentialsProvider(credentialsProvider).setURI(gitRepository).setDirectory(gitFile).call();
+                ListBranchCommand listBranchCommand = git.branchList();
+                String branch = listBranchCommand.getRepository().getBranch();
+                if (branchName!=null && !"master".equals(branchName) && branch != null && !branch.equals(branchName)) {
+                    git.checkout().setCreateBranch(true).setName(branchName).call();
+                }
+                git.pull().setRemote("origin").setCredentialsProvider(credentialsProvider).call();
             }
-            ListBranchCommand listBranchCommand = git.branchList();
-            String branch = listBranchCommand.getRepository().getBranch();
-            if (branchName!=null && !"master".equals(branchName) && branch != null && !branch.equals(branchName)) {
-                git.checkout().setCreateBranch(true).setName(branchName).call();
-            }
-            git.pull().setRemote("origin").setCredentialsProvider(credentialsProvider).call();
         } catch (GitAPIException e) {
             e.printStackTrace();
         } catch (IOException e) {
