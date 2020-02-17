@@ -6,8 +6,8 @@ import instance from './index';
 export default {
   // 城市端可见处理商品列表
   queryList: {
-    p: '/citydeal/queryList',
-    r: params => {
+      p: '/citydeal/queryList',
+      r: params => {
       return instance.post(p, param)
     }
   }

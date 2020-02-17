@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @ComponentScan("com.lin.bulter")
 @MapperScan("com.lin.bulter.repository.mysql.dao")
-@EnableMongoRepositories("com.lin.bulter.repository.mongodb.dao")
 public class Application {
 
     private static final Logger logger = LoggerFactory.getLogger(Application.class);

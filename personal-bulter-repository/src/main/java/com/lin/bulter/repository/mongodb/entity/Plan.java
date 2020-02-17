@@ -7,12 +7,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Document(collection = "plan")
-public class PublicLog {
-
-    @Id
+public class Plan {
     private String id;
     private Integer task_type;
     private String task_name;
@@ -20,6 +18,6 @@ public class PublicLog {
     private Integer task_classfiy;
     private String[] task_endtime;
     private String task_content;
-    private Integer c_t = Math.toIntExact(System.currentTimeMillis() / 1000);
-    private Integer u_t = Math.toIntExact(System.currentTimeMillis() / 1000);
+    private Integer c_t = Math.toIntExact(System.currentTimeMillis()/1000);
+    private Integer u_t = Math.toIntExact(System.currentTimeMillis()/1000);
 }

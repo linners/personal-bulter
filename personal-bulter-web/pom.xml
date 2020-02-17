@@ -11,6 +11,8 @@
 
     <artifactId>personal-bulter-web</artifactId>
 
+<!--    <packaging>war</packaging>-->
+
     <dependencies>
         <!-- business -->
         <dependency>
@@ -68,7 +70,7 @@
     </dependencies>
 
     <build>
-        <finalName>framework</finalName>
+        <finalName>person-bulter</finalName>
 
         <plugins>
             <!-- Spring Boot包含一个Maven插件 ，可以将项目打包为可执行的jar。 -->

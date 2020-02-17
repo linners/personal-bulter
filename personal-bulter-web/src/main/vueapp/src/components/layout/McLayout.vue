@@ -47,19 +47,6 @@
           userinfo.roleName = resData.role.name
           userinfo.pcpDomain = pcpDomain
           this.userInfo = userinfo
-          __punch.to(
-          	this.$refs.wrapper,
-            resData.user.name + resData.user.id,  //此处替换成当前用户+用户id
-          	{
-          		width: 250,	//水印单元宽度
-          		height: 80,	//水印单元高度
-          		bg: 'transparent',	//水印背景
-          		bgAlpha: 1,		//水印背景透明度
-          		color: '#dedede',	//水印字体颜色
-          		alpha: 0.4,	//水印字体颜色透明度
-          		font: '16px Arial'	//水印字体
-          	}
-          )
         }).catch(err => {
           console.error(err);
         })

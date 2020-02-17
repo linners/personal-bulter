@@ -395,7 +395,9 @@ public class CurdGeneratorServiceImpl {
         String mapperPackage = param.getMapperPackage();
         String mapperPackageFilePath = mapperPackage.replaceAll("\\.", "/");
         String newFilePath = generatedCurdCodePath + "/"  + mapperPackageFilePath + "/xml/extend/" + context.get("entityNameUp") + "Mapper.xml";
-
+        if(new File(newFilePath).exists()){
+            return;
+        }
         String newContent = instance.compileVelocityFile(getGitProjectPath(gitProjectPath, templateFilePath), context);
         writeNewContentToFile(newFilePath, newContent);
     }
