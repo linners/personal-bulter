@@ -9,7 +9,7 @@ spring:
   # mysql
   datasource:
     name: test
-    url: jdbc:mysql://39.105.136.143:3306/bulter?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&autoReconnect=true&autoReconnectForPools=true&failOverReadOnly=false&useSSL=false
+    url: jdbc:mysql://49.233.139.161:6803/bulter?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&autoReconnect=true&autoReconnectForPools=true&failOverReadOnly=false&useSSL=false
     sqlScriptEncoding: utf8
     username: bulter
     password: Lin*^37aa
