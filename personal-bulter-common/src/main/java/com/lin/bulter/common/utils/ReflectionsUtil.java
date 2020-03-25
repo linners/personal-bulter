@@ -1,7 +1,8 @@
 package com.lin.bulter.common.utils;
 
 import com.alibaba.fastjson.JSON;
-import static com.alibaba.fastjson.serializer.SerializerFeature.WriteMapNullValue;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Predicate;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -18,6 +19,8 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
+
+import static com.alibaba.fastjson.serializer.SerializerFeature.WriteMapNullValue;
 
 
 /**
@@ -74,9 +77,12 @@ public class ReflectionsUtil {
 		//过滤器
 		Predicate<String> filter = filterBuilder;
 
+		// 获得classLoad对象
+		urlClassLoader = new URLClassLoader(classLoaderUrls);
 		// 定义Reflections对象，指明"包过滤器"，以及扫描器的类型，主要把是扫描器的类型
 		//细分之后，得到对应的数据
 		reflections = new Reflections(new ConfigurationBuilder()
+				.addClassLoader(urlClassLoader)
 				.filterInputsBy(filter)
 				.setScanners(
 						new SubTypesScanner().filterResultsBy(filter),
@@ -86,8 +92,6 @@ public class ReflectionsUtil {
 						new MethodParameterScanner().filterResultsBy(filter)
 				).setUrls(classLoaderUrls));
 
-		// 获得classLoad对象
-		urlClassLoader = new URLClassLoader(classLoaderUrls);
 		return reflections;
 	}
 
@@ -226,6 +230,7 @@ public class ReflectionsUtil {
 				parameterizedTypeMap.put(typeVariable.getName(), i < parameterizedTypes.length ? parameterizedTypes[i] : "");
 			}
 		}
+		// 通过构造方法，获取实例化对象
 		Constructor<?>[] constructors = aClass.getConstructors();
 		Object beanObj = new Object();
 		try {
@@ -245,6 +250,7 @@ public class ReflectionsUtil {
 			}
 		}
 		System.out.println("className：" + className);
+		// 反射获取字段，并赋值
 		Field[] fields = aClass.getDeclaredFields();
 		Field[] supperFields = aClass.getSuperclass().getDeclaredFields();
 		Field[] result = ArrayUtils.addAll(fields, supperFields);
@@ -311,6 +317,246 @@ public class ReflectionsUtil {
 						genericTypeName = genericTypeName.replaceAll(typeName, "");
 						ReturnCls retrunTyp = parseRetrunTyp(genericTypeName);
 						Object instance = getClassInstance(retrunTyp.getReturnClsName(), retrunTyp.getParameterizedTypeClsName());
+						field.set(beanObj, instance);
+					}
+				}
+			}
+		}
+		return beanObj;
+	}
+
+	/**
+	 * 反射，获得类的实例化对象
+	 *
+	 * @param className          类对象
+	 * @param parameterizedTypes 类的泛型类型
+	 * @return
+	 */
+	public static Object getClassInstance(Map context, String className, String... parameterizedTypes) throws Exception {
+		// 反射获得类(若接口，则返回实现类）
+		Class<?> aClass = getClassImplName(className);
+		Map<String, String> parameterizedTypeMap = new HashMap<>();
+		TypeVariable<? extends Class<?>>[] typeParameters = aClass.getTypeParameters();
+		if (typeParameters != null && typeParameters.length > 0) {
+			for (int i = 0; i < typeParameters.length; i++) {
+				TypeVariable typeVariable = typeParameters[i];
+				parameterizedTypeMap.put(typeVariable.getName(), i < parameterizedTypes.length ? parameterizedTypes[i] : "");
+			}
+		}
+		// 通过构造方法，获取实例化对象
+		Constructor<?>[] constructors = aClass.getConstructors();
+		Object beanObj = new Object();
+		try {
+			beanObj = aClass.newInstance();
+		} catch (Exception e) {
+			if (constructors.length > 0) {
+				Constructor<?> constructor = constructors[0];
+				Class<?>[] parameterTypes = constructor.getParameterTypes();
+				Object[] params = new Object[parameterTypes.length];
+				for (int i = 0; i < parameterTypes.length; i++) {
+					//Class<?> clsTmp = parameterTypes[i];
+					//if(clsTmp.getName().equals("java.lang.String")){
+					params[i] = null;
+					//}
+				}
+				beanObj = constructor.newInstance(params);
+			}
+		}
+		System.out.println("className：" + className);
+		// 反射获取字段，并赋值
+		Field[] fields = aClass.getDeclaredFields();
+		Field[] supperFields = aClass.getSuperclass().getDeclaredFields();
+		Field[] result = ArrayUtils.addAll(fields, supperFields);
+		if (result != null && result.length > 0) {
+			for (Field field : result) {
+				if (Modifier.isFinal(field.getModifiers())) {
+					continue;
+				}
+				field.setAccessible(true);
+				String fieldName = field.getName();
+				String typeName = field.getType().getName();
+				String genericTypeName = field.getGenericType().getTypeName();
+				String tmp = genericTypeName;
+				if (genericTypeName.contains("java.util.List")) {
+					tmp = genericTypeName.replaceAll("java.util.List", "")
+							.replaceAll("<", "")
+							.replaceAll(">", "");
+				}
+				String parameterizedType = parameterizedTypeMap.get(tmp);
+				if (StringUtils.isNotBlank(parameterizedType)) {
+					genericTypeName = parameterizedType;
+				}
+				System.out.print("field type: " + typeName + ", ");
+				System.out.print("field name: " + fieldName);
+				System.out.println("");
+				String fieldRealVal = context.get(fieldName).toString();
+				if (typeName.equals("java.lang.String")) {
+					field.set(beanObj, fieldRealVal);
+				} else if (typeName.equals("java.lang.Long") || typeName.equals("long")) {
+					field.set(beanObj, Long.valueOf(fieldRealVal));
+				} else if (typeName.equals("java.lang.Integer") || typeName.equals("int")) {
+					field.set(beanObj, Integer.valueOf(fieldRealVal));
+				} else if (typeName.equals("java.util.Date")) {
+					field.set(beanObj, new Date());
+				} else if (typeName.equals("java.lang.Boolean") || typeName.equals("boolean")) {
+					field.set(beanObj, Boolean.valueOf(fieldRealVal));
+				} else if (typeName.equals("java.math.BigDecimal")) {
+					field.set(beanObj, BigDecimal.valueOf(Long.valueOf(fieldRealVal)));
+				} else if (typeName.equals("java.lang.Short") || typeName.equals("short")) {
+					field.set(beanObj, Short.valueOf(fieldRealVal));
+				} else if (typeName.equals("java.lang.Byte") || typeName.equals("byte")) {
+					field.set(beanObj, Byte.valueOf(fieldRealVal));
+				} else if (typeName.equals("java.lang.Float") || typeName.equals("float")) {
+					field.set(beanObj, Float.valueOf(fieldRealVal));
+				} else if (typeName.equals("java.lang.Double") || typeName.equals("double")) {
+					field.set(beanObj, Double.valueOf(fieldRealVal));
+				} else if (typeName.equals("java.lang.Character") || typeName.equals("char")) {
+					field.set(beanObj, fieldRealVal.toCharArray());
+				} else if (typeName.equals("java.util.List")) {
+					genericTypeName = genericTypeName.replaceAll(typeName, "");
+					ReturnCls retrunTyp = parseRetrunTyp(genericTypeName);
+					Object instance = getClassInstance(retrunTyp.getReturnClsName(), retrunTyp.getParameterizedTypeClsName());
+					List<Object> list = new ArrayList<>();
+					list.add(instance);
+					field.set(beanObj, list);
+				} else if (typeName.equals("java.lang.Object")) {
+					if (genericTypeName.startsWith("java.util.List")) {
+						genericTypeName = genericTypeName.replaceAll("java.util.List", "");
+						ReturnCls retrunTyp = parseRetrunTyp(genericTypeName);
+						Object instance = getClassInstance(retrunTyp.getReturnClsName(), retrunTyp.getParameterizedTypeClsName());
+						List<Object> list = new ArrayList<>();
+						list.add(instance);
+						field.set(beanObj, list);
+					} else {
+						genericTypeName = genericTypeName.replaceAll(typeName, "");
+						ReturnCls retrunTyp = parseRetrunTyp(genericTypeName);
+						Object instance = getClassInstance(retrunTyp.getReturnClsName(), retrunTyp.getParameterizedTypeClsName());
+						field.set(beanObj, instance);
+					}
+				}
+			}
+		}
+		return beanObj;
+	}
+
+	/**
+	 * 反射，获得类的实例化对象
+	 *
+	 * @param className          类对象
+	 * @param parameterizedTypes 类的泛型类型
+	 * @return
+	 */
+	public static Object getClassInstance(JSONObject context, String className, String... parameterizedTypes) throws Exception {
+		// 反射获得类(若接口，则返回实现类）
+		Class<?> aClass = getClassImplName(className);
+		Map<String, String> parameterizedTypeMap = new HashMap<>();
+		TypeVariable<? extends Class<?>>[] typeParameters = aClass.getTypeParameters();
+		if (typeParameters != null && typeParameters.length > 0) {
+			for (int i = 0; i < typeParameters.length; i++) {
+				TypeVariable typeVariable = typeParameters[i];
+				parameterizedTypeMap.put(typeVariable.getName(), i < parameterizedTypes.length ? parameterizedTypes[i] : "");
+			}
+		}
+		// 通过构造方法，获取实例化对象
+		Constructor<?>[] constructors = aClass.getConstructors();
+		Object beanObj = new Object();
+		try {
+			beanObj = aClass.newInstance();
+		} catch (Exception e) {
+			if (constructors.length > 0) {
+				Constructor<?> constructor = constructors[0];
+				Class<?>[] parameterTypes = constructor.getParameterTypes();
+				Object[] params = new Object[parameterTypes.length];
+				for (int i = 0; i < parameterTypes.length; i++) {
+					//Class<?> clsTmp = parameterTypes[i];
+					//if(clsTmp.getName().equals("java.lang.String")){
+					params[i] = null;
+					//}
+				}
+				beanObj = constructor.newInstance(params);
+			}
+		}
+		System.out.println("className：" + className);
+		// 反射获取字段，并赋值
+		Field[] fields = aClass.getDeclaredFields();
+		Field[] supperFields = aClass.getSuperclass().getDeclaredFields();
+		Field[] result = ArrayUtils.addAll(fields, supperFields);
+		if (result != null && result.length > 0) {
+			for (Field field : result) {
+				if (Modifier.isFinal(field.getModifiers())) {
+					continue;
+				}
+				field.setAccessible(true);
+				String fieldName = field.getName();
+				String typeName = field.getType().getName();
+				String genericTypeName = field.getGenericType().getTypeName();
+				String tmp = genericTypeName;
+				if (genericTypeName.contains("java.util.List")) {
+					tmp = genericTypeName.replaceAll("java.util.List", "")
+							.replaceAll("<", "")
+							.replaceAll(">", "");
+				}
+				String parameterizedType = parameterizedTypeMap.get(tmp);
+				if (StringUtils.isNotBlank(parameterizedType)) {
+					genericTypeName = parameterizedType;
+				}
+				System.out.print("field type: " + typeName + ", ");
+				System.out.print("field name: " + fieldName);
+				System.out.println("");
+				Object fieldReal = context.get(fieldName);
+				if (fieldReal == null) {
+					continue;
+				}
+				String fieldRealVal = fieldReal.toString();
+				if (typeName.equals("java.lang.String")) {
+					field.set(beanObj, fieldRealVal);
+				} else if (typeName.equals("java.lang.Long") || typeName.equals("long")) {
+					field.set(beanObj, Long.valueOf(fieldRealVal));
+				} else if (typeName.equals("java.lang.Integer") || typeName.equals("int")) {
+					field.set(beanObj, Integer.valueOf(fieldRealVal));
+				} else if (typeName.equals("java.util.Date")) {
+					field.set(beanObj, new Date());
+				} else if (typeName.equals("java.lang.Boolean") || typeName.equals("boolean")) {
+					field.set(beanObj, Boolean.valueOf(fieldRealVal));
+				} else if (typeName.equals("java.math.BigDecimal")) {
+					field.set(beanObj, BigDecimal.valueOf(Long.valueOf(fieldRealVal)));
+				} else if (typeName.equals("java.lang.Short") || typeName.equals("short")) {
+					field.set(beanObj, Short.valueOf(fieldRealVal));
+				} else if (typeName.equals("java.lang.Byte") || typeName.equals("byte")) {
+					field.set(beanObj, Byte.valueOf(fieldRealVal));
+				} else if (typeName.equals("java.lang.Float") || typeName.equals("float")) {
+					field.set(beanObj, Float.valueOf(fieldRealVal));
+				} else if (typeName.equals("java.lang.Double") || typeName.equals("double")) {
+					field.set(beanObj, Double.valueOf(fieldRealVal));
+				} else if (typeName.equals("java.lang.Character") || typeName.equals("char")) {
+					field.set(beanObj, fieldRealVal.toCharArray());
+				} else if (typeName.equals("java.util.List")) {
+					genericTypeName = genericTypeName.replaceAll(typeName, "");
+					ReturnCls retrunTyp = parseRetrunTyp(genericTypeName);
+					List<Object> list = new ArrayList<>();
+					JSONArray jsonArray = context.getJSONArray(fieldName);
+					for (int i = 0; i < jsonArray.size(); i++) {
+						JSONObject jsonObject = jsonArray.getJSONObject(i);
+						Object instance = getClassInstance(jsonObject, retrunTyp.getReturnClsName(), retrunTyp.getParameterizedTypeClsName());
+						list.add(instance);
+					}
+					field.set(beanObj, list);
+				} else if (typeName.equals("java.lang.Object")) {
+					if (genericTypeName.startsWith("java.util.List")) {
+						genericTypeName = genericTypeName.replaceAll("java.util.List", "");
+						ReturnCls retrunTyp = parseRetrunTyp(genericTypeName);
+						List<Object> list = new ArrayList<>();
+						JSONArray jsonArray = context.getJSONArray(fieldName);
+						for (int i = 0; i < jsonArray.size(); i++) {
+							JSONObject jsonObject = jsonArray.getJSONObject(i);
+							Object instance = getClassInstance(jsonObject, retrunTyp.getReturnClsName(), retrunTyp.getParameterizedTypeClsName());
+							list.add(instance);
+						}
+						field.set(beanObj, list);
+					} else {
+						genericTypeName = genericTypeName.replaceAll(typeName, "");
+						ReturnCls retrunTyp = parseRetrunTyp(genericTypeName);
+						Object instance = getClassInstance(context.getJSONObject(fieldName), retrunTyp.getReturnClsName(), retrunTyp.getParameterizedTypeClsName());
 						field.set(beanObj, instance);
 					}
 				}
