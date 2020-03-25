@@ -11,7 +11,7 @@ public class MockContext {
 	private String className;
 	private String methodName;
 	private String alias;
-	private Object[] argClasses;
+	private String[] argClasses;
 
 	public String getClassName() {
 		return className;
@@ -37,11 +37,11 @@ public class MockContext {
 		this.alias = alias;
 	}
 
-	public Object[] getArgClasses() {
+	public String[] getArgClasses() {
 		return argClasses;
 	}
 
-	public void setArgClasses(Object[] argClasses) {
+	public void setArgClasses(String[] argClasses) {
 		this.argClasses = argClasses;
 	}
 }
