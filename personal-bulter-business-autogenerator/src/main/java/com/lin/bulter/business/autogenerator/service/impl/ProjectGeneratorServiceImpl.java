@@ -177,7 +177,7 @@ public class ProjectGeneratorServiceImpl {
                     if (!tmpFile.exists()) {
                         tmpFile.mkdirs();
                     }
-                    if(oldFilePath!=null && !oldFilePath.endsWith(".vue")){
+                    if(oldFilePath!=null && (!oldFilePath.endsWith(".vue") && !oldFilePath.endsWith(".properties"))){
                         String newContent = velocityInstance.compileVelocityFile(oldFileRelativePath, velocityContext);
                         try {
                             Files.write(newContent.getBytes(), new File(newFilePath));
