@@ -49,12 +49,12 @@ public class MockController {
 		System.out.printf("param = " + JSON.toJSONString(mockContext));
 		byte[] serialize = null;
 		try {
-			Object instance = ReflectionsUtil.getClassMethodReturnInstance(null, mockContext.getClassName(), mockContext.getMethodName(), mockContext.getArgClasses());
+			Map<String, Object> clsMap = ReflectionsUtil.getClassMethodReturnInstance(null, mockContext.getClassName(), mockContext.getMethodName(), mockContext.getArgClasses());
 			String str = "{\"code\":\"0000\",\"data\":{\"data\":[{\"chineseHerbalType\":1,\"chineseHerbalTypeStr\":\"test\",\"drugStroeName\":\"tesg2\",\"processType\":2,\"processTypeStr\":\"faf\",\"venderId\":22,\"venderName\":\"阿斯蒂芬\"},{\"chineseHerbalType\":2,\"chineseHerbalTypeStr\":\"test33\",\"drugStroeName\":\"tesg32\",\"processType\":1,\"processTypeStr\":\"fafsf\",\"venderId\":234,\"venderName\":\"阿斯蒂芬第三方\"}],\"pageNo\":1,\"pageSize\":10,\"totalCount\":1,\"totalPage\":1},\"msg\":\"OK\",\"success\":true}";
 			JSONObject context = JSON.parseObject(str);
 			Object instance1 = ReflectionsUtil.getClassMethodReturnInstance(context, mockContext.getClassName(), mockContext.getMethodName(), mockContext.getArgClasses());
 
-			serialize = serialize(instance1);
+			serialize = serialize(clsMap.get("instance"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
