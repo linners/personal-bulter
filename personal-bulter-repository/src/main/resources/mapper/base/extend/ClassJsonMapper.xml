@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lin.bulter.repository.mysql.dao.ClassJsonMapper">
+
+    <!-- 分页查询 -->
+    <select id="selectByCondition" resultMap="BaseResultMap">
+      select
+        <include refid="Base_Column_List" />
+      from
+        class_json
+      <where>
+        <if test="param.id != null">
+            id = #{param.id}
+        </if>
+        <if test="param.className != null">
+           and class_name = #{param.className}
+        </if>
+        <if test="param.methodName != null">
+           and method_name = #{param.methodName}
+        </if>
+        <if test="param.argClassList != null">
+           and arg_class_list = #{param.argClassList}
+        </if>
+        <if test="param.jsonVal != null">
+           and json_val = #{param.jsonVal}
+        </if>
+
+      </where>
+    </select>
+</mapper>

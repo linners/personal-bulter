@@ -7,8 +7,8 @@ module.exports = {
     disableHostCheck: true,
     host: '127.0.0.1',
     proxy: {
-      '/api': {
-        target: 'http://sale.test.yunshanmeicai.com:8082/',
+      '/bulter': {
+        target: 'http://localhost:8082/',
         ws: true,
         changeOrigin: true,
         pathRewrite: {

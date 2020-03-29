@@ -3,6 +3,13 @@ spring:
     active: db,redis,dev
   application:
     name: bulter-blog-main
+  servlet:
+    ############### 文件上传 ###############
+    multipart:
+      # 单个文件的最大值
+      max-request-size: 10MB
+      # 上传文件总的最大值
+      max-file-size: 10MB
 
 # 服务器配置
 server:

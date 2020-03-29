@@ -104,6 +104,21 @@ method.post = (url, params) => {
   })
 }
 
+//返回一个Promise(发送post请求)
+method.get = (url, params) => {
+  return new Promise((resolve, reject) => {
+    axios.get(url)
+      .then(response => {
+        resolve(response);
+      }, err => {
+        reject(err);
+      })
+      .catch((error) => {
+        reject(error)
+      })
+  })
+}
+
 // method.axios = axios
 
 export default method

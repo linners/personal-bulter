@@ -4,6 +4,8 @@ import store from './store'
 import router from './router'
 import './plugins/element.js'
 
+import Axios from './utils/axios'
+
 import 'xe-utils'
 import VXETable from 'vxe-table'
 import 'vxe-table/lib/index.css'
@@ -11,6 +13,8 @@ import 'vxe-table/lib/index.css'
 Vue.use(VXETable)
 
 Vue.config.productionTip = false
+
+Vue.prototype.$http = Axios
 
 new Vue({
   store,
