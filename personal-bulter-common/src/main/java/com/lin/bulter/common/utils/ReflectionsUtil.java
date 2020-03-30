@@ -267,6 +267,9 @@ public class ReflectionsUtil {
 
 		// 反射获得类(若接口，则返回实现类）
 		Class<?> aClass = getClassImplName(className);
+		if(aClass.isEnum()){
+			return classInfo;
+		}
 		// 通过构造方法，获得类实例对象
 		Object beanInstance = getClassInstaceByContructor(aClass);
 		// 泛型擦除
@@ -397,7 +400,7 @@ public class ReflectionsUtil {
 
 		if(commonFieldVal!=null){
 			field.set(beanInstance, commonFieldVal);
-		}else if (typeName.equals("java.util.List")) {
+		}else if (typeName.equals("java.util.List") || typeName.equals("java.util.Set")) {
 			Object fieldValTemp = getCommonFieldVal(genericTypeName, fieldName, context);
 			if(fieldValTemp!=null){
 				field.set(beanInstance, fieldValTemp);
@@ -420,6 +423,16 @@ public class ReflectionsUtil {
 				field.set(beanInstance, fieldListVal);
 			} else {
 				genericTypeName = genericTypeName.replaceAll(typeName, "");
+				ReturnCls retrunTyp = parseRetrunTyp(genericTypeName);
+				// 获得field值
+				Object fieldVal = getFieldObjectVal(fieldName, context, fieldObj, retrunTyp);
+				field.set(beanInstance, fieldVal);
+			}
+		}else {
+			Object fieldValTemp = getCommonFieldVal(genericTypeName, fieldName, context);
+			if(fieldValTemp!=null){
+				field.set(beanInstance, fieldValTemp);
+			}else {
 				ReturnCls retrunTyp = parseRetrunTyp(genericTypeName);
 				// 获得field值
 				Object fieldVal = getFieldObjectVal(fieldName, context, fieldObj, retrunTyp);
