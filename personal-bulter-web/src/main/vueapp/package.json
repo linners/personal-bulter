@@ -14,7 +14,7 @@
     "element-ui": "^2.13.0",
     "jsonlint": "^1.6.3",
     "lodash": "^4.17.11",
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "script-loader": "^0.7.2",
     "vue": "^2.6.11",
     "vue-json-views": "^1.1.0",
